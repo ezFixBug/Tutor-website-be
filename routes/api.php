@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UtilController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,10 @@ Route::post('/login', [UserController::class, 'login']);
 
 Route::get('/provinces', [ProvinceController::class, 'getAllProvinces']);
 Route::get('/districts/{province_id}', [ProvinceController::class, 'getDistrictByProvince']);
+
+Route::get('/subjects', [UtilController::class, 'getAllSubjects']);
+Route::get('/classes', [UtilController::class, 'getAllClasses']);
+Route::get('/jobs', [UtilController::class, 'getAllJobs']);
 
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/logout', [UserController::class, 'logout']);

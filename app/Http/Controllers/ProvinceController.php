@@ -12,6 +12,7 @@ class ProvinceController extends Controller
     {
         $this->province_repository = $province_repository;
     }
+    
     public function getAllProvinces()
     {
         $provinces = $this->province_repository->getAllProvinces();
