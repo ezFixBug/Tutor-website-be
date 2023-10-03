@@ -21,6 +21,18 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\ProvinceRepositoryInterface::class,
             \App\Repositories\ProvinceRepository::class
         );
+        $this->app->bind(
+            \App\Repositories\Interfaces\SubjectRepositoryInterface::class,
+            \App\Repositories\SubjectRepository::class
+        );
+        $this->app->bind(
+            \App\Repositories\Interfaces\JobRepositoryInterface::class,
+            \App\Repositories\JobRepository::class
+        );
+        $this->app->bind(
+            \App\Repositories\Interfaces\ClassRepositoryInterface::class,
+            \App\Repositories\ClassRepository::class
+        );
     }
 
     /**
