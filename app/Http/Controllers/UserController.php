@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BecomeTutorRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Repositories\Interfaces\UserRepositoryInterface as UserRepository;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Constants;
 
 class UserController extends Controller
 {
@@ -25,24 +27,21 @@ class UserController extends Controller
     {
         $credentials = $request->only('email', 'password');
         $token = null;
-        try {
-            if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json([
-                    'status' => 400,
-                    'message' => 'Tên đăng nhập hoặc mật khẩu không chính xác'
-                ]);
-            }
-            $user = $this->user_repo->findUserByEmail($credentials['email']);
 
+        if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json([
-                'status' => 200,
-                'message' => 'Login successfully',
-                'user' => $user,
-                'token' => $token
+                'status' => 400,
+                'message' => 'Tên đăng nhập hoặc mật khẩu không chính xác'
             ]);
-        } catch (\Exception $e) {
-            return response()->json(['failed_to_create_token'], 500);
         }
+        $user = $this->user_repo->findUserByEmail($credentials['email']);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Login successfully',
+            'user' => $user,
+            'token' => $token
+        ]);
     }
 
     public function register(RegisterRequest $request)
@@ -64,5 +63,59 @@ class UserController extends Controller
             'status' => 200,
             'message' => 'logout successfully',
         ]);
+    }
+
+    public function getUserById($id)
+    {
+        $user = $this->user_repo->findUserById($id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Không tìm thấy người dùng'
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 200,
+            'user' => $user,
+        ]);
+    }
+
+    public function registTutor(BecomeTutorRequest $request)
+    {
+        $input = $request->all();
+
+        \DB::beginTransaction();
+
+        try{
+
+            $user = $this->user_repo->findUserById($input['id']);
+
+            if (!$user || !$user['status_cd'] == Constants::CD_IN_PROGRESS) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Không tìm thấy người dùng'
+                ], 403);
+            }
+
+            $new_user = $this->user_service->registTutor($input);       
+            
+            \DB::commit();  
+
+            return response()->json([
+                'status' => 200,
+                'user' => $new_user,
+            ]);
+
+            
+        } catch (\Exception $e) {
+            \DB::rollback();
+            return response()->json([
+                'status' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
     }
 }
