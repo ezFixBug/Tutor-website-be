@@ -4,17 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+use Kjmtrue\VietnamZone\Models\Province;
 
-class User extends Authenticatable implements JWTSubject
+class User extends BaseModel implements
+    JWTSubject,
+    AuthenticatableContract,
+    AuthorizableContract,
+    CanResetPasswordContract
 {
-    use HasFactory, Notifiable, SoftDeletes; 
+    use HasFactory, Notifiable, SoftDeletes, Authenticatable, Authorizable, CanResetPassword, MustVerifyEmail;
 
     protected $table = 'users';
     public $timestamps = true;
+
+    protected $casts = [
+        'id' => 'string',
+    ];
+
+    protected $appends = ['full_name'];
 
     public $fillable = [
         'id',
@@ -40,9 +56,9 @@ class User extends Authenticatable implements JWTSubject
         'back_citizen_card',
         'title',
         'description',
-        'cost',
+        'price',
         'type_cd',
-        'active',
+        'status_cd',
         'title',
         'created_at',
         'updated_at',
@@ -60,20 +76,12 @@ class User extends Authenticatable implements JWTSubject
     ];
 
     /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
-
-    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
      */
-    public function getJWTIdentifier() {
+    public function getJWTIdentifier()
+    {
         return $this->getKey();
     }
 
@@ -82,7 +90,28 @@ class User extends Authenticatable implements JWTSubject
      *
      * @return array
      */
-    public function getJWTCustomClaims() {
+    public function getJWTCustomClaims()
+    {
         return [];
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'teach_subjects', 'user_id', 'subject_id');
+    }
+
+    public function classes()
+    {
+        return $this->belongsToMany(Subject::class, 'teach_subjects', 'user_id', 'class_id');
+    }
+
+    public function provinces()
+    {
+        return $this->belongsToMany(Province::class, 'teach_places', 'user_id', 'province_id');
     }
 }

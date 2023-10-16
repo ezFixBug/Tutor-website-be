@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Repositories\Interfaces\UserRepositoryInterface as UserRepository;
 use Hash;
 use JWTAuth;
+use Constants;
 
 class UserService
 {
@@ -17,12 +18,57 @@ class UserService
 
     public function register($input)
     {   
-        $input['id'] = \Str::orderedUuid()->toString();
         $input['password'] = Hash::make($input['password']);
 
         $user = $this->user_repo->register($input);
+
         $token = JWTAuth::fromUser($user);
 
         return [$user, $token];
+    }
+
+    public function registTutor($input)
+    {
+        $user_id = $input['id'];
+        $input['status_cd'] = Constants::CD_IN_PROGRESS;
+
+        $this->user_repo->updateUser($input);
+
+        $list_subject_class = $input['listSubjectClasses'] ?? [];
+        if (!empty($list_subject_class)) {
+            foreach ($list_subject_class as $subject_class) {
+                $subject_id = $subject_class['subject'] ?? null;
+
+                $list_class = $subject_class['classes'] ?? [];
+                foreach ($list_class as $class_id) {
+                    $data = [
+                        'user_id' => $user_id,
+                        'subject_id' => $subject_id,
+                        'class_id' => $class_id
+                    ];
+                    $this->user_repo->createTeachSubjectOfUser($data);         
+                }
+            }
+        }
+
+        $list_teach_places = $input['listCityDistricts'] ?? [];
+        if (!empty($list_teach_places)) {
+            foreach ($list_teach_places as $place) {
+                $province_id = $place['city'] ?? null;
+
+                $list_district = $place['districts'] ?? [];
+                foreach ($list_district as $district_id) {
+                    $data = [
+                        'user_id' => $user_id,
+                        'province_id' => $province_id,
+                        'district_id' => $district_id
+                    ];
+
+                    $this->user_repo->createTeachPlacesOfUser($data);         
+                }
+            }
+        }
+
+        return $this->user_repo->findUserById($user_id);
     }
 }

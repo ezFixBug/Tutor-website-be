@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\Models\TeachPlace;
+use App\Models\TeachSubject;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 
@@ -9,11 +11,36 @@ class UserRepository implements UserRepositoryInterface
 {
     public function register($input)
     {
-        return User::create($input);
+        $user_id = User::saveOrUpdateWithUuid($input);
+        return User::find($user_id);
     }
 
     public function findUserByEmail($email)
     {
-        return User::where('email', $email)->first();
+        $user = User::where('email', $email)->first();
+
+        return $user ? $user->toArray() : [];
+    }
+
+    public function findUserById($id)
+    {
+        $user = User::where('id', $id)->first(); 
+
+        return $user ? $user->toArray() : [];
+    }
+
+    public function updateUser($input)
+    {
+        User::saveOrUpdateWithUuid($input);
+    }
+
+    public function createTeachSubjectOfUser($data)
+    {
+        TeachSubject::createOrUpdate($data);
+    }
+
+    public function createTeachPlacesOfUser($data)
+    {
+        TeachPlace::createOrUpdate($data);
     }
 }

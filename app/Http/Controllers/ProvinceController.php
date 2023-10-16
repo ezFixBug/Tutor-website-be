@@ -28,7 +28,7 @@ class ProvinceController extends Controller
         if (!$province = $this->province_repository->findProvinceById($province_id)){
             return response()->json([
                 'status' => 404,
-                'message' => "Not found province",
+                'message' => "Not found district",
             ]);
         }
 

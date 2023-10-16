@@ -21,4 +21,14 @@ class Subject extends Model
         'updated_at',
         'deleted_at',
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'teach_subjects' , 'subject_id', 'user_id');
+    }
+
+    public function classes() 
+    {
+        return $this->belongsToMany(UserClass::class, 'teach_subjects', 'subject_id', 'class_id');
+    }
 }
