@@ -10,4 +10,6 @@ interface PostRepositoryInterface
 
     public function getPostById($post_id);
 
+    public function deletePost($post_id);
+
 }

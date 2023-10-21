@@ -45,4 +45,5 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/post/{user_id}', [PostController::class,'createPostByUser']);
     Route::get('/post/{post_id}', [PostController::class,'getPostDetail']);
     Route::post('/post/edit/{post_id}', [PostController::class,'editPost']);
+    Route::delete('/post/{post_id}', [PostController::class,'deletePost']);
 });
