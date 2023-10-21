@@ -26,4 +26,9 @@ class PostRepository implements PostRepositoryInterface
 
         return $post ? $post->toArray() : null;
     }
+
+    public function deletePost($post_id)
+    {
+        return Post::where('id', '=', $post_id)->delete();
+    }
 }

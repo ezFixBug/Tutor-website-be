@@ -101,4 +101,28 @@ class PostController extends Controller
             'post' => $post,
         ]);
     }
+
+    public function deletePost($post_id)
+    {
+        $post = $this->post_repo->getPostById($post_id);
+
+        if (!$post) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Không tìm thấy bài viết'
+            ], 404);
+        }
+
+        if(!$this->post_repo->deletePost($post_id)) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Xóa bài viết không thành công'
+            ], 403);
+        }
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+        ]);
+    }
 }
