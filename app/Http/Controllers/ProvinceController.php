@@ -18,6 +18,7 @@ class ProvinceController extends Controller
         $provinces = $this->province_repository->getAllProvinces();
         
         return response()->json([
+            'result' => true,
             'status' => 200,
             'provinces' => $provinces,
         ]);
@@ -27,6 +28,7 @@ class ProvinceController extends Controller
     {
         if (!$province = $this->province_repository->findProvinceById($province_id)){
             return response()->json([
+                'result'=> false,
                 'status' => 404,
                 'message' => "Not found district",
             ]);
@@ -35,6 +37,7 @@ class ProvinceController extends Controller
         $districts = $this->province_repository->getDistrictByProvince($province_id);
         
         return response()->json([
+            "result"=> true,
             'status' => 200,
             'province_name' => $province->name,
             'districts' => $districts,

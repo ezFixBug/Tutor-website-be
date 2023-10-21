@@ -114,4 +114,9 @@ class User extends BaseModel implements
     {
         return $this->belongsToMany(Province::class, 'teach_places', 'user_id', 'province_id');
     }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
 }
