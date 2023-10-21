@@ -23,6 +23,7 @@ class UtilController extends Controller
         $subjects = $this->subject_repository->getAllSubjects();
 
         return response()->json([
+            'result' => true,
             'status' => 200,
             'subjects' => $subjects,
         ]);
@@ -33,6 +34,7 @@ class UtilController extends Controller
         $jobs = $this->job_repository->getAllJobs();
 
         return response()->json([
+            'result'=> true,
             'status' => 200,
             'jobs' => $jobs,
         ]);
@@ -43,6 +45,7 @@ class UtilController extends Controller
         $classes = $this->class_repository->getAllClasses();
 
         return response()->json([
+            'result'=> true,
             'status' => 200,
             'classes' => $classes,
         ]);

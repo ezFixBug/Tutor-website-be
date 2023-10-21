@@ -30,6 +30,7 @@ class UserController extends Controller
 
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json([
+                'result' => false,
                 'status' => 400,
                 'message' => 'Tên đăng nhập hoặc mật khẩu không chính xác'
             ]);
@@ -37,6 +38,7 @@ class UserController extends Controller
         $user = $this->user_repo->findUserByEmail($credentials['email']);
 
         return response()->json([
+            'result' => true,
             'status' => 200,
             'message' => 'Login successfully',
             'user' => $user,
@@ -49,6 +51,7 @@ class UserController extends Controller
         list($user, $token) = $this->user_service->register($request->toArray());
         
         return response()->json([
+            'result' => true,
             'status' => 200,
             'message' => 'User created successfully',
             'user' => $user,
@@ -60,6 +63,7 @@ class UserController extends Controller
     {
         Auth::logout();
         return response()->json([
+            'result' => true,
             'status' => 200,
             'message' => 'logout successfully',
         ]);
@@ -71,12 +75,14 @@ class UserController extends Controller
 
         if (!$user) {
             return response()->json([
+                'result' => false,
                 'status' => 404,
                 'message' => 'Không tìm thấy người dùng'
             ], 404);
         }
 
         return response()->json([
+            'result' => true,
             'status' => 200,
             'user' => $user,
         ]);
@@ -94,6 +100,7 @@ class UserController extends Controller
 
             if (!$user || !$user['status_cd'] == Constants::CD_IN_PROGRESS) {
                 return response()->json([
+                    'result' => false,
                     'status' => 404,
                     'message' => 'Không tìm thấy người dùng'
                 ], 403);
@@ -104,6 +111,7 @@ class UserController extends Controller
             \DB::commit();  
 
             return response()->json([
+                'result' => true,
                 'status' => 200,
                 'user' => $new_user,
             ]);
@@ -112,6 +120,7 @@ class UserController extends Controller
         } catch (\Exception $e) {
             \DB::rollback();
             return response()->json([
+                'result' => false,
                 'status' => 500,
                 'message' => $e->getMessage(),
             ], 500);

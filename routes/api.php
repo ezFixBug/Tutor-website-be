@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilController;
+use App\Http\Controllers\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -34,5 +35,14 @@ Route::get('/jobs', [UtilController::class, 'getAllJobs']);
 
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/logout', [UserController::class, 'logout']);
+
+
     Route::post('/become-tutor', [UserController::class, 'registTutor']);
+
+
+    //posts
+    Route::get('/posts/{user_id}', [PostController::class,'getPostsByUser']);
+    Route::post('/post/{user_id}', [PostController::class,'createPostByUser']);
+    Route::get('/post/{post_id}', [PostController::class,'getPostDetail']);
+    Route::post('/post/edit/{post_id}', [PostController::class,'editPost']);
 });
