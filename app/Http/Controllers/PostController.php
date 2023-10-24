@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePostRequest;
+use App\Http\Requests\LikeRequest;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
+use Auth;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -13,10 +15,31 @@ class PostController extends Controller
 
     private $post_repo;
 
-    public function __construct(UserRepositoryInterface $user_repo,PostRepositoryInterface $post_repo)
+    public function __construct(UserRepositoryInterface $user_repo, PostRepositoryInterface $post_repo)
     {
         $this->user_repo = $user_repo;
         $this->post_repo = $post_repo;
+    }
+
+    public function getAllPosts(Request $request)
+    {
+        $input = $request->all();
+
+        $data = $this->post_repo->getAllPosts($input);
+
+        $paginate = [
+            'current_page' => $data['current_page'],
+            'next_page' => $data['next_page_url'],
+            'prev_page' => $data['prev_page_url'],
+            'total_pages' => $data['last_page'],
+        ];
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'posts' => $data['data'],
+            'paginate' => $paginate,
+        ]);      
     }
 
     public function getPostsByUser($user_id)
@@ -72,11 +95,18 @@ class PostController extends Controller
                 'message' => 'Không tìm thấy bài viết'
             ], 404);
         }
+        
+        $post['is_like'] = $this->post_repo->checkLike($post_id, Auth::id());
+
+        $this->post_repo->increaseViewsOfPost($post);
+
+        $related_posts = $this->post_repo->getRelatedPosts($post);
 
         return response()->json([
             'result' => true,
             'status' => 200,
             'post' => $post,
+            'related_posts' => $related_posts,
         ]);
     }
 
@@ -119,6 +149,27 @@ class PostController extends Controller
                 'message' => 'Xóa bài viết không thành công'
             ], 403);
         }
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+        ]);
+    }
+
+    public function hanleLike(LikeRequest $request)
+    {
+        $input = $request->all();
+
+        $post = $this->post_repo->getPostById($input['relation_id']);
+
+        if (!$post) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Không tìm thấy bài viết'
+            ], 404);
+        }
+        
+        $this->post_repo->handleLikePost($input);
 
         return response()->json([
             'result' => true,

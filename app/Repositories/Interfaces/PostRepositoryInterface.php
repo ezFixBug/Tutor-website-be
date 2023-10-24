@@ -12,4 +12,13 @@ interface PostRepositoryInterface
 
     public function deletePost($post_id);
 
+    public function getAllPosts($input);
+
+    public function getRelatedPosts($post);
+
+    public function increaseViewsOfPost($post);
+
+    public function handleLikePost($input);
+
+    public function checkLike($post_id, $user_id);
 }
