@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class Post extends BaseModel
+class Comment extends BaseModel
 {
     use HasFactory, Notifiable, SoftDeletes; 
 
-    protected $table = 'posts';
+    protected $table = 'comments';
     public $timestamps = true;
     
     protected $casts = [
@@ -19,37 +19,22 @@ class Post extends BaseModel
 
     public $fillable = [
         'id',
-        'title',
-        'user_id',
-        'image',
-        'type_cd',
-        'description',
         'content',
-        'view',
-        'like',
-        'tags',
+        'user_id',
+        'relation_id',
+        'parent_id',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
-
-    public function getTagsAttribute($value)
-    {
-        return json_decode($value, true);
-    }
-    
-    public function setTagsAttribute($value)
-    {
-        $this->attributes['tags'] = json_encode($value);
-    }
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function likes()
+    public function childrenComments()
     {
-        return $this->hasMany(Like::class, 'relation_id');
+        return $this->hasMany(Comment::class, 'parent_id');
     }
 }

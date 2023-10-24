@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilController;
@@ -33,17 +34,26 @@ Route::get('/subjects', [UtilController::class, 'getAllSubjects']);
 Route::get('/classes', [UtilController::class, 'getAllClasses']);
 Route::get('/jobs', [UtilController::class, 'getAllJobs']);
 
+Route::get('/posts', [PostController::class,'getAllPosts']);
+Route::get('/post/{post_id}', [PostController::class,'getPostDetail']);
+
+Route::get('/comments/{relation_id}', [CommentController::class,'getComments']);
+
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/logout', [UserController::class, 'logout']);
-
 
     Route::post('/become-tutor', [UserController::class, 'registTutor']);
 
 
-    //posts
+    //user's posts
     Route::get('/posts/{user_id}', [PostController::class,'getPostsByUser']);
     Route::post('/post/{user_id}', [PostController::class,'createPostByUser']);
-    Route::get('/post/{post_id}', [PostController::class,'getPostDetail']);
     Route::post('/post/edit/{post_id}', [PostController::class,'editPost']);
     Route::delete('/post/{post_id}', [PostController::class,'deletePost']);
+
+    // comment
+    Route::post('/comment', [CommentController::class,'addComment']);
+
+    //like
+    Route::post('/like', [PostController::class, 'hanleLike']);
 });
