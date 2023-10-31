@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilController;
@@ -39,11 +40,12 @@ Route::get('/post/{post_id}', [PostController::class,'getPostDetail']);
 
 Route::get('/comments/{relation_id}', [CommentController::class,'getComments']);
 
+Route::get('/course/{course_id}', [CourseController::class,'getDetailCourse']);
+
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/logout', [UserController::class, 'logout']);
 
     Route::post('/become-tutor', [UserController::class, 'registTutor']);
-
 
     //user's posts
     Route::get('/posts/{user_id}', [PostController::class,'getPostsByUser']);
@@ -56,4 +58,10 @@ Route::group(['middleware' => ['auth:api']], function () {
 
     //like
     Route::post('/like', [PostController::class, 'hanleLike']);
+    
+    //user's courses
+    Route::post('/course/{user_id}', [CourseController::class,'createCourse']);
+    Route::get('/courses/{user_id}', [CourseController::class,'getUserCourses']);
+    Route::post('/edit-course', [CourseController::class,'editCourse']);
+    Route::delete('/delete-course/{course_id}', [CourseController::class,'deleteCourse']);
 });
