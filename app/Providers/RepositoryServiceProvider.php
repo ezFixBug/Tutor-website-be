@@ -41,6 +41,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\CommentRepositoryInterface::class,
             \App\Repositories\CommentRepository::class
         );
+        $this->app->bind(
+            \App\Repositories\Interfaces\CourseRepositoryInterface::class,
+            \App\Repositories\CourseRepository::class
+        );
     }
 
     /**

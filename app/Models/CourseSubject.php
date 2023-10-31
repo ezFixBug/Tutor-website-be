@@ -7,28 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class UserClass extends Model
+class CourseSubject extends BaseModel
 {
     use HasFactory, Notifiable, SoftDeletes; 
-    
-    protected $table = 'classes';
+
+    protected $table = 'course_subjects';
     public $timestamps = true;
+    
+    protected $casts = [
+        'id' => 'string',
+    ];
 
     public $fillable = [
         'id',
-        'name',
+        'course_id',
+        'subject_id',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
-
-    public function subjects() 
-    {
-        return $this->belongsToMany(Subject::class, 'teach_subjects', 'class_id', 'subject_id');
-    }
-
-    public function courses() 
-    {
-        return $this->belongsToMany(Course::class, 'course_classes', 'class_id', 'course_id');
-    }
 }
