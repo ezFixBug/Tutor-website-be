@@ -30,4 +30,14 @@ class Like extends BaseModel
     {
         return $this->belongsTo(User::class);
     }
+
+    public function post()
+    {
+        return $this->belongsTo(Post::class, 'relation_id');
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class, 'relation_id');
+    }
 }

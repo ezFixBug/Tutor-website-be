@@ -27,4 +27,7 @@ class Constants
     //admin REJECT course
     public const CD_REJECT = 3;
 
+    public const CD_FREE = 1;
+    public const CD_CHARGES = 2;
+
 }

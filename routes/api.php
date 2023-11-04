@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\FeedBackController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilController;
@@ -27,6 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 Route::get('/user/{id}', [UserController::class, 'getUserById']);
+Route::get('/tutors', [UserController::class, 'getListTutor']);
 
 Route::get('/provinces', [ProvinceController::class, 'getAllProvinces']);
 Route::get('/districts/{province_id}', [ProvinceController::class, 'getDistrictByProvince']);
@@ -41,11 +43,14 @@ Route::get('/post/{post_id}', [PostController::class,'getPostDetail']);
 Route::get('/comments/{relation_id}', [CommentController::class,'getComments']);
 
 Route::get('/course/{course_id}', [CourseController::class,'getDetailCourse']);
+Route::get('/courses', [CourseController::class,'getCourses']);
 
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/logout', [UserController::class, 'logout']);
 
     Route::post('/become-tutor', [UserController::class, 'registTutor']);
+
+    Route::get('/liked/{user_id}', [UtilController::class,'getLiked']);
 
     //user's posts
     Route::get('/posts/{user_id}', [PostController::class,'getPostsByUser']);
@@ -57,11 +62,16 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/comment', [CommentController::class,'addComment']);
 
     //like
-    Route::post('/like', [PostController::class, 'hanleLike']);
+    Route::post('/like/post', [PostController::class, 'hanleLike']);
     
     //user's courses
     Route::post('/course/{user_id}', [CourseController::class,'createCourse']);
     Route::get('/courses/{user_id}', [CourseController::class,'getUserCourses']);
     Route::post('/edit-course', [CourseController::class,'editCourse']);
     Route::delete('/delete-course/{course_id}', [CourseController::class,'deleteCourse']);
+    Route::post('/like/course', [CourseController::class, 'hanleLike']);
+
+    //feedback 
+    Route::get('/feedbacks', [FeedBackController::class,'getAllFeedback']);
+    Route::post('/feedback', [FeedBackController::class,'addFeedBack']);
 });

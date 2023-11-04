@@ -32,8 +32,7 @@ class CreateCoursesTable extends Migration
             $table->string('link')->nullable(true);
             $table->jsonb('schedule')->nullable(true);
             $table->jsonb('tags')->nullable(true);
-            $table->integer('status_cd')->nullable(false)->defaultValue(Constants::CD_WAITING_TO_ACCEPT);
-            $table->rememberToken();
+            $table->integer('status_cd')->default(Constants::CD_WAITING_TO_ACCEPT);
             $table->timestamps();
             $table->timestampTz('deleted_at')->nullable(true);
         });

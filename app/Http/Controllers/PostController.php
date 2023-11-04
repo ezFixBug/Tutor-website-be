@@ -6,11 +6,14 @@ use App\Http\Requests\CreatePostRequest;
 use App\Http\Requests\LikeRequest;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
+use App\Traits\HandleLikeTrait;
 use Auth;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {    
+    use HandleLikeTrait;
+
     private $user_repo;
 
     private $post_repo;
@@ -95,8 +98,8 @@ class PostController extends Controller
                 'message' => 'Không tìm thấy bài viết'
             ], 404);
         }
-        
-        $post['is_like'] = $this->post_repo->checkLike($post_id, Auth::id());
+
+        $post['is_like'] = $this->checkLike($post_id, Auth::id());
 
         $this->post_repo->increaseViewsOfPost($post);
 
@@ -169,7 +172,7 @@ class PostController extends Controller
             ], 404);
         }
         
-        $this->post_repo->handleLikePost($input);
+        $this->handleLike($input);
 
         return response()->json([
             'result' => true,

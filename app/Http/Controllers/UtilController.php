@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Repositories\Interfaces\SubjectRepositoryInterface as SubjectRepository;
 use App\Repositories\Interfaces\ClassRepositoryInterface as ClassRepository;
 use App\Repositories\Interfaces\JobRepositoryInterface as JobRepository;
+use App\Traits\HandleLikeTrait;
 
 class UtilController extends Controller
 {
+    use HandleLikeTrait;
+
     private $subject_repository;
     private $class_repository;
     private $job_repository;
@@ -48,6 +51,17 @@ class UtilController extends Controller
             'result'=> true,
             'status' => 200,
             'classes' => $classes,
+        ]);
+    }
+
+    public function getLiked($user_id)
+    {
+        $results = $this->getListLiked($user_id);
+
+        return response()->json([
+            'result'=> true,
+            'status' => 200,
+            'results' => $results,
         ]);
     }
 }

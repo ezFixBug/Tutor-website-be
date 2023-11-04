@@ -127,4 +127,11 @@ class UserController extends Controller
         }
 
     }
+
+    public function getListTutor(Request $request) 
+    {
+        $input = $request->all();
+
+        
+    }
 }

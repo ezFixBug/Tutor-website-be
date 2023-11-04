@@ -15,4 +15,6 @@ interface UserRepositoryInterface
     public function createTeachSubjectOfUser($data);
 
     public function createTeachPlacesOfUser($data);
+
+    public function searchTutorList($input);
 }
