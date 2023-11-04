@@ -107,7 +107,7 @@ class User extends BaseModel implements
 
     public function classes()
     {
-        return $this->belongsToMany(Subject::class, 'teach_subjects', 'user_id', 'class_id');
+        return $this->belongsToMany(UserClass::class, 'teach_subjects', 'user_id', 'class_id');
     }
 
     public function provinces()
@@ -118,5 +118,10 @@ class User extends BaseModel implements
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasOne(Like::class);
     }
 }

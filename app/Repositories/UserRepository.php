@@ -12,19 +12,19 @@ class UserRepository implements UserRepositoryInterface
     public function register($input)
     {
         $user_id = User::saveOrUpdateWithUuid($input);
-        return User::find($user_id);
+        return User::withCount('likes')->find($user_id);
     }
 
     public function findUserByEmail($email)
     {
-        $user = User::where('email', $email)->first();
+        $user = User::withCount('likes')->where('email', $email)->first();
 
         return $user ? $user->toArray() : [];
     }
 
     public function findUserById($id)
     {
-        $user = User::where('id', $id)->first(); 
+        $user = User::withCount('likes')->where('id', $id)->first(); 
 
         return $user ? $user->toArray() : [];
     }
@@ -42,5 +42,10 @@ class UserRepository implements UserRepositoryInterface
     public function createTeachPlacesOfUser($data)
     {
         TeachPlace::createOrUpdate($data);
+    }
+
+    public function searchTutorList($input) 
+    {
+        
     }
 }

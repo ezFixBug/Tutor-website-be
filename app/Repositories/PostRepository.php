@@ -6,7 +6,6 @@ use App\Models\Like;
 use App\Models\Post;
 use App\Repositories\Interfaces\PostRepositoryInterface;
 
-
 class PostRepository implements PostRepositoryInterface
 {
     public function getPostsByUserId($user_id)
@@ -64,26 +63,5 @@ class PostRepository implements PostRepositoryInterface
         $view = $current_view + 1;
         
         Post::find($post['id'])->update(['view' => $view]);
-    }
-
-    public function handleLikePost($input)
-    {
-        $is_like = $this->checkLike($input['relation_id'], $input['user_id']);
-        
-        if ($is_like) {
-            Like::where('relation_id', $input['relation_id'])
-                ->where('user_id', $input['user_id'])
-                ->delete();
-
-        } else {
-            Like::saveOrUpdateWithUuid($input);
-        }
-    }
-
-    public function checkLike($relation_id, $user_id)
-    {
-        return Like::where('relation_id', $relation_id)
-            ->where('user_id', $user_id)
-            ->exists();
     }
 }

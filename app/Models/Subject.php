@@ -17,6 +17,7 @@ class Subject extends Model
     public $fillable = [
         'id',
         'name',
+        'image',
         'created_at',
         'updated_at',
         'deleted_at',

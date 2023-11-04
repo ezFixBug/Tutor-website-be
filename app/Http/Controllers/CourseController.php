@@ -4,13 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Constants;
 use App\Http\Requests\CreateCourseRequest;
+use App\Http\Requests\LikeRequest;
 use App\Repositories\Interfaces\CourseRepositoryInterface;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\CourseService;
+use App\Traits\HandleLikeTrait;
+use Auth;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
+    use HandleLikeTrait;
+    
     private $course_service;
     private $user_repo;
     private $course_repo;
@@ -94,8 +99,12 @@ class CourseController extends Controller
             return response()->json([
                 'status' => 404,
                 'message' => 'Không tìm thấy khóa học'
-            ], 403);
+            ], 404);
         }
+
+        $course['is_like'] = $this->checkLike($course_id, Auth::id());
+
+        $this->course_repo->increaseViewsOfCourse($course);
 
         return response()->json([
             'result' => true,
@@ -172,6 +181,48 @@ class CourseController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
 
+    public function getCourses(Request $request)
+    {
+        $input = $request->all();
+
+        $data = $this->course_repo->searchListCourse($input);
+
+        $paginate = [
+            'current_page' => $data['current_page'],
+            'next_page' => $data['next_page_url'],
+            'prev_page' => $data['prev_page_url'],
+            'total_pages' => $data['last_page'],
+            'total_count' => $data['total'],        
+        ];
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'courses' => $data['data'],
+            'paginate' => $paginate,
+        ]);  
+    }
+
+    public function hanleLike(LikeRequest $request)
+    {
+        $input = $request->all();
+
+        $course = $this->course_repo->getCourseById($input['relation_id']);
+
+        if (!$course) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Không tìm thấy khóa học'
+            ], 404);
+        }
+        
+        $this->handleLike($input);
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+        ]);
     }
 }

@@ -19,4 +19,8 @@ interface CourseRepositoryInterface
     public function deleteClassesOfCourse($input);
 
     public function deleteCourse($course_id);
+
+    public function searchListCourse($input);
+
+    public function increaseViewsOfCourse($course);
 }

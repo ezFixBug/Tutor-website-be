@@ -35,6 +35,8 @@ class Course extends BaseModel
         'start_date',
         'time_start',
         'tags',
+        'view',
+        'like',
         'status_cd',
         'created_at',
         'updated_at',
@@ -74,5 +76,10 @@ class Course extends BaseModel
     public function classes()
     {
         return $this->belongsToMany(UserClass::class, 'course_classes', 'course_id', 'class_id');
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Like::class, 'relation_id');
     }
 }
