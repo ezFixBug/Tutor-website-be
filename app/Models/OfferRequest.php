@@ -3,27 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
 
-class FeedBack extends BaseModel
+class OfferRequest extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes; 
 
-    protected $table = 'feedbacks';
+    protected $table = 'offer_requests';
     public $timestamps = true;
-
+    
     protected $casts = [
         'id' => 'string',
     ];
 
     public $fillable = [
         'id',
-        'name',
-        'email',
-        'content',
+        'user_id',
+        'request_id',
+        'status_cd',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
-
 }

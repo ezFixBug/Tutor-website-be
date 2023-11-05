@@ -30,4 +30,7 @@ class Constants
     public const CD_FREE = 1;
     public const CD_CHARGES = 2;
 
+    public const CD_OFFER_REQUEST_DEFAULT = 1;
+    public const CD_OFFER_REQUEST_APPROVE = 2;
+
 }

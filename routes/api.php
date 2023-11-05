@@ -4,6 +4,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FeedBackController;
 use App\Http\Controllers\ProvinceController;
+use App\Http\Controllers\RequestTutorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilController;
 use App\Http\Controllers\PostController;
@@ -45,6 +46,9 @@ Route::get('/comments/{relation_id}', [CommentController::class,'getComments']);
 Route::get('/course/{course_id}', [CourseController::class,'getDetailCourse']);
 Route::get('/courses', [CourseController::class,'getCourses']);
 
+Route::get('/requests', [RequestTutorController::class,'getRequests']);
+Route::get('/detail-request/{request_id}', [RequestTutorController::class,'getDetailRequest']);
+
 Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/logout', [UserController::class, 'logout']);
 
@@ -74,4 +78,10 @@ Route::group(['middleware' => ['auth:api']], function () {
     //feedback 
     Route::get('/feedbacks', [FeedBackController::class,'getAllFeedback']);
     Route::post('/feedback', [FeedBackController::class,'addFeedBack']);
+
+    //request tutors
+    Route::post('/request-tutor', [RequestTutorController::class,'createRequest']);
+    Route::get('/request-tutors/{user_id}', [RequestTutorController::class,'getRequestOfUser']);
+    Route::get('/offer-requests/{request_id}', [RequestTutorController::class,'getOfferOfRequest']);
+    Route::delete('/delete-request/{request_id}', [RequestTutorController::class,'deleteRequest']);
 });
