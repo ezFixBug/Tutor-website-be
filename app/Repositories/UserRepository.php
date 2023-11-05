@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\TeachPlace;
 use App\Models\TeachSubject;
+use App\Models\TeachSubjectClasses;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 
@@ -24,7 +25,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function findUserById($id)
     {
-        $user = User::withCount('likes')->where('id', $id)->first(); 
+        $user = User::with('teachSubjects.classes', 'subjects')->withCount('likes')->where('id', $id)->first(); 
 
         return $user ? $user->toArray() : [];
     }
@@ -36,7 +37,12 @@ class UserRepository implements UserRepositoryInterface
 
     public function createTeachSubjectOfUser($data)
     {
-        TeachSubject::createOrUpdate($data);
+        return TeachSubject::createOrUpdate($data);
+    }
+
+    public function createTeachSubjectClass($data)
+    {
+        return TeachSubjectClasses::createOrUpdate($data);
     }
 
     public function createTeachPlacesOfUser($data)

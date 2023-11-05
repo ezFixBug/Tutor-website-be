@@ -24,4 +24,13 @@ class TeachSubject extends BaseModel
         'deleted_at',
     ];
 
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
+    public function classes()
+    {
+        return $this->hasMany(TeachSubjectClasses::class);
+    }
 }
