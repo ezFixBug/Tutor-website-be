@@ -9,4 +9,9 @@ class TeachSubjectClasses extends BaseModel
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function classes()
+    {
+        return $this->belongsTo(UserClass::class, 'class_id');
+    }
 }

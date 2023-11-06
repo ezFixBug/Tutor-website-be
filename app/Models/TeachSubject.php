@@ -18,7 +18,6 @@ class TeachSubject extends BaseModel
         'id',
         'user_id',
         'subject_id',
-        'class_id',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -29,7 +28,7 @@ class TeachSubject extends BaseModel
         return $this->belongsTo(Subject::class);
     }
 
-    public function classes()
+    public function teachSubjectClasses()
     {
         return $this->hasMany(TeachSubjectClasses::class);
     }

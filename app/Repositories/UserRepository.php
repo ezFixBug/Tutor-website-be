@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\TeachPlace;
+use App\Models\TeachPlaceDistricts;
 use App\Models\TeachSubject;
 use App\Models\TeachSubjectClasses;
 use App\Models\User;
@@ -25,7 +26,18 @@ class UserRepository implements UserRepositoryInterface
 
     public function findUserById($id)
     {
-        $user = User::with('teachSubjects.classes', 'subjects')->withCount('likes')->where('id', $id)->first(); 
+        $user = User::with([
+            'teachSubjects' => function ($query) {
+                $query->with(['teachSubjectClasses.classes', 'subject:id,name']);
+            },
+            'subjects',
+            'provinces',
+            'teachPlaces' => function ($query) {
+                $query->with([
+                    'teachPlaceDistricts.district', 'province:id,name'
+                ]);
+            }
+        ])->withCount('likes')->where('id', $id)->first();
 
         return $user ? $user->toArray() : [];
     }
@@ -45,13 +57,18 @@ class UserRepository implements UserRepositoryInterface
         return TeachSubjectClasses::createOrUpdate($data);
     }
 
-    public function createTeachPlacesOfUser($data)
+    public function createTeachPlaceDistrict($data)
     {
-        TeachPlace::createOrUpdate($data);
+        return TeachPlaceDistricts::createOrUpdate($data);
     }
 
-    public function searchTutorList($input) 
+    public function createTeachPlacesOfUser($data)
     {
-        
+        return TeachPlace::createOrUpdate($data);
+    }
+
+    public function searchTutorList($input)
+    {
+
     }
 }

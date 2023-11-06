@@ -64,15 +64,18 @@ class UserService
             foreach ($list_teach_places as $place) {
                 $province_id = $place['city'] ?? null;
 
+                $teach_place = $this->user_repo->createTeachPlacesOfUser([
+                    'user_id' => $user_id,
+                    'province_id' => $province_id,
+                ]);
+
                 $list_district = $place['districts'] ?? [];
                 foreach ($list_district as $district_id) {
                     $data = [
-                        'user_id' => $user_id,
-                        'province_id' => $province_id,
+                        'teach_place_id' => $teach_place->id,
                         'district_id' => $district_id
                     ];
-
-                    $this->user_repo->createTeachPlacesOfUser($data);
+                    $this->user_repo->createTeachPlaceDistrict($data);
                 }
             }
         }
