@@ -7,7 +7,10 @@ use App\Models\Comment;
 use App\Models\Course;
 use App\Models\CourseClass;
 use App\Models\CourseSubject;
+use App\Models\RegisterCourse;
+use App\Models\User;
 use App\Repositories\Interfaces\CourseRepositoryInterface;
+use Auth;
 
 class CourseRepository implements CourseRepositoryInterface
 {
@@ -133,7 +136,45 @@ class CourseRepository implements CourseRepositoryInterface
     {
         $current_view = $course['view'];
         $view = $current_view + 1;
-        
+
         Course::find($course['id'])->update(['view' => $view]);
+    }
+
+    public function saveOrUpdateRegisterCourse($input)
+    {
+        RegisterCourse::saveOrUpdateWithUuid($input);
+    }
+
+    public function findRegisterCourse($id)
+    {
+        return RegisterCourse::find($id)->toArray();
+    }
+
+    public function getRegisterCourses($course_id)
+    {
+        $register_courses = RegisterCourse::where('course_id', $course_id)->get();
+
+        return $register_courses ? $register_courses->toArray() : [];
+    }
+
+    public function isRegisterCourse($course_id)
+    {
+        return RegisterCourse::where('course_id', $course_id)->where('user_id', Auth::id())->exists();
+    }
+
+    public function getStudentsByCoureId($course_id)
+    {
+        $students = User::join('register_courses', 'users.id', 'register_courses.user_id')
+            ->where('register_courses.course_id', $course_id)
+            ->select('users.*', 'register_courses.approve_at', 'register_courses.id as register_course_id')
+            ->get();
+        $students->each(function ($student) use ($course_id){
+            $student->is_approved = RegisterCourse::where('course_id', $course_id)
+                ->where('user_id', $student->id)
+                ->where('status_cd', Constants::CD_REGISTER_COURSE_APPROVE)
+                ->exists();
+        });
+
+        return $students ? $students->toArray() : [];
     }
 }

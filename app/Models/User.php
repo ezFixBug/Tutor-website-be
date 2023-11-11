@@ -140,4 +140,14 @@ class User extends BaseModel implements
     {
         return $this->belongsTo(District::class);
     }
+    
+    public function job()
+    {
+        return $this->belongsTo(Job::class, 'job_current_id');
+    }
+
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
 }

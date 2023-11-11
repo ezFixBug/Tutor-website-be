@@ -10,7 +10,7 @@ class RequestTutorController extends Controller
 {
     private $request_tutor_repository;
 
-    public function __construct(RequestTutorRepositoryInterface $request_tutor_repository)   
+    public function __construct(RequestTutorRepositoryInterface $request_tutor_repository)
     {
         $this->request_tutor_repository = $request_tutor_repository;
     }
@@ -99,14 +99,43 @@ class RequestTutorController extends Controller
             'next_page' => $data['next_page_url'],
             'prev_page' => $data['prev_page_url'],
             'total_pages' => $data['last_page'],
-            'total_count' => $data['total'],        
+            'total_count' => $data['total'],
         ];
-        
+
         return response()->json([
             'result' => true,
             'status' => 200,
             'requests' => $data['data'],
             'paginate' => $paginate,
-        ]);  
+        ]);
+    }
+
+    public function createOfferRequest(Request $request, $request_id)
+    {
+        $input = $request->all();
+
+        $input['request_id'] = $request_id;
+
+        $this->request_tutor_repository->createOfferOfRequest($input);
+
+        return response()->json([
+            'status' => 200,
+            'result' => true,
+        ], 200);
+    }
+
+    public function cancelOffer($request_id)
+    {
+        $this->request_tutor_repository->deleteOfferOfRequest($request_id);
+
+        return response()->json([
+            'status' => 200,
+            'result' => true,
+        ], 200);
+    }
+
+    public function approveOffer($request_id)
+    {
+        $this->request_tutor_repository->approveOfferOfRequest($request_id);
     }
 }

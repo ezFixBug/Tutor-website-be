@@ -53,6 +53,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\RequestTutorRepositoryInterface::class,
             \App\Repositories\RequestTutorRepository::class
         );
+        $this->app->bind(
+            \App\Repositories\Interfaces\AdminUserRepositoryInterface::class,
+            \App\Repositories\AdminUserRepository::class
+        );
     }
 
     /**

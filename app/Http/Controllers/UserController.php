@@ -132,6 +132,20 @@ class UserController extends Controller
     {
         $input = $request->all();
 
-        
+        $data = $this->user_repo->searchTutorList($input);
+
+        $paginate = [
+            'current_page' => $data['current_page'],
+            'next_page' => $data['next_page_url'],
+            'prev_page' => $data['prev_page_url'],
+            'total_pages' => $data['last_page'],
+        ];
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'tutors' => $data['data'],
+            'paginate' => $paginate,
+        ]);  
     }
 }

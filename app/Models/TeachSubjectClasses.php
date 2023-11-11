@@ -10,7 +10,7 @@ class TeachSubjectClasses extends BaseModel
 
     protected $guarded = ['id'];
 
-    public function classes()
+    public function class()
     {
         return $this->belongsTo(UserClass::class, 'class_id');
     }

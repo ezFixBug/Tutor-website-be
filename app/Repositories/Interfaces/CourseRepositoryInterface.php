@@ -23,4 +23,14 @@ interface CourseRepositoryInterface
     public function searchListCourse($input);
 
     public function increaseViewsOfCourse($course);
+
+    public function saveOrUpdateRegisterCourse($input);
+
+    public function findRegisterCourse($id);
+
+    public function getRegisterCourses($course_id);
+
+    public function isRegisterCourse($course_id);
+
+    public function getStudentsByCoureId($course_id);
 }

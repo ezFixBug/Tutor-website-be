@@ -33,4 +33,7 @@ class Constants
     public const CD_OFFER_REQUEST_DEFAULT = 1;
     public const CD_OFFER_REQUEST_APPROVE = 2;
 
+    public const CD_REGISTER_COURSE_DEFAULT = 1;
+    public const CD_REGISTER_COURSE_APPROVE = 2;
+
 }
