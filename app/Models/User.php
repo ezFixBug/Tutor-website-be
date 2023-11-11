@@ -106,14 +106,19 @@ class User extends BaseModel implements
         return $this->belongsToMany(Subject::class, 'teach_subjects', 'user_id', 'subject_id');
     }
 
-    public function classes()
+    public function teachSubjects()
     {
-        return $this->belongsToMany(UserClass::class, 'teach_subjects', 'user_id', 'class_id');
+        return $this->hasMany(TeachSubject::class);
     }
 
     public function provinces()
     {
         return $this->belongsToMany(Province::class, 'teach_places', 'user_id', 'province_id');
+    }
+
+    public function teachPlaces()
+    {
+        return $this->hasMany(TeachPlace::class);
     }
 
     public function posts()

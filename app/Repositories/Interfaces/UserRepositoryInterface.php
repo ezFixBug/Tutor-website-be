@@ -13,6 +13,10 @@ interface UserRepositoryInterface
     public function updateUser($input);
 
     public function createTeachSubjectOfUser($data);
+    
+    public function createTeachSubjectClass($data);
+
+    public function createTeachPlaceDistrict($data);
 
     public function createTeachPlacesOfUser($data);
 

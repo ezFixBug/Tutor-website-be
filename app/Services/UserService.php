@@ -6,6 +6,7 @@ use App\Repositories\Interfaces\UserRepositoryInterface as UserRepository;
 use Hash;
 use JWTAuth;
 use Constants;
+use PhpParser\Node\Stmt\Continue_;
 
 class UserService
 {
@@ -17,7 +18,7 @@ class UserService
     }
 
     public function register($input)
-    {   
+    {
         $input['password'] = Hash::make($input['password']);
 
         $user = $this->user_repo->register($input);
@@ -39,14 +40,21 @@ class UserService
             foreach ($list_subject_class as $subject_class) {
                 $subject_id = $subject_class['subject'] ?? null;
 
+                if (!$subject_id) continue;
+
                 $list_class = $subject_class['classes'] ?? [];
+
+                $teach_subject = $this->user_repo->createTeachSubjectOfUser([
+                    'user_id' => $user_id,
+                    'subject_id' => $subject_id,
+                ]);
+
                 foreach ($list_class as $class_id) {
                     $data = [
-                        'user_id' => $user_id,
-                        'subject_id' => $subject_id,
+                        'teach_subject_id' => $teach_subject->id,
                         'class_id' => $class_id
                     ];
-                    $this->user_repo->createTeachSubjectOfUser($data);         
+                    $this->user_repo->createTeachSubjectClass($data);
                 }
             }
         }
@@ -56,15 +64,18 @@ class UserService
             foreach ($list_teach_places as $place) {
                 $province_id = $place['city'] ?? null;
 
+                $teach_place = $this->user_repo->createTeachPlacesOfUser([
+                    'user_id' => $user_id,
+                    'province_id' => $province_id,
+                ]);
+
                 $list_district = $place['districts'] ?? [];
                 foreach ($list_district as $district_id) {
                     $data = [
-                        'user_id' => $user_id,
-                        'province_id' => $province_id,
+                        'teach_place_id' => $teach_place->id,
                         'district_id' => $district_id
                     ];
-
-                    $this->user_repo->createTeachPlacesOfUser($data);         
+                    $this->user_repo->createTeachPlaceDistrict($data);
                 }
             }
         }
