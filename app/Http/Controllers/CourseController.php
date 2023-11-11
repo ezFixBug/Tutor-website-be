@@ -10,6 +10,7 @@ use App\Repositories\Interfaces\UserRepositoryInterface;
 use App\Services\CourseService;
 use App\Traits\HandleLikeTrait;
 use Auth;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
@@ -105,6 +106,8 @@ class CourseController extends Controller
         $course['is_like'] = $this->checkLike($course_id, Auth::id());
 
         $this->course_repo->increaseViewsOfCourse($course);
+
+        $course['is_register'] = $this->course_repo->isRegisterCourse($course_id);
 
         return response()->json([
             'result' => true,
@@ -223,6 +226,55 @@ class CourseController extends Controller
         return response()->json([
             'result' => true,
             'status' => 200,
+        ]);
+    }
+
+    public function registerCourse(Request $request)
+    {
+        $input = $request->all();
+
+        $this->course_repo->saveOrUpdateRegisterCourse($input);
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+        ]);
+    }
+
+    public function approveCourse($register_course_id)
+    {
+        $register_course = $this->course_repo->findRegisterCourse($register_course_id);
+
+        $register_course['approve_at'] = Carbon::now();
+        $register_course['status_cd'] = Constants::CD_REGISTER_COURSE_APPROVE;
+
+        $this->course_repo->saveOrUpdateRegisterCourse($register_course);
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+        ]);
+    }
+
+    public function getRegisterCourses($course_id)
+    {
+        $register_courses = $this->course_repo->getRegisterCourses($course_id);
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'register_courses' => $register_courses
+        ]);
+    }
+
+    public function getStudents($course_id) 
+    {
+        $students = $this->course_repo->getStudentsByCoureId($course_id);
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'students' => $students
         ]);
     }
 }

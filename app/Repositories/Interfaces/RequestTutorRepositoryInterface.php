@@ -17,4 +17,11 @@ interface RequestTutorRepositoryInterface
     public function deleteRequest($request_id);
 
     public function getAll($input);
+
+    public function createOfferOfRequest($input);
+
+    public function deleteOfferOfRequest($request_id);
+
+    public function approveOfferOfRequest($request_id);
+
 }

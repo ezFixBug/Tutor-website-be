@@ -64,4 +64,9 @@ class RequestTutor extends BaseModel
     {
         return $this->belongsTo(Subject::class);
     }
+
+    public function offers()
+    {
+        return $this->hasMany(OfferRequest::class, 'request_id');
+    }
 }

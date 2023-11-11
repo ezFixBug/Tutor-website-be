@@ -8,6 +8,7 @@ use App\Models\TeachSubject;
 use App\Models\TeachSubjectClasses;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
+use Constants;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -28,7 +29,7 @@ class UserRepository implements UserRepositoryInterface
     {
         $user = User::with([
             'teachSubjects' => function ($query) {
-                $query->with(['teachSubjectClasses.classes', 'subject:id,name']);
+                $query->with(['teachSubjectClasses.class', 'subject:id,name']);
             },
             'subjects',
             'provinces',
@@ -36,8 +37,14 @@ class UserRepository implements UserRepositoryInterface
                 $query->with([
                     'teachPlaceDistricts.district', 'province:id,name'
                 ]);
-            }
-        ])->withCount('likes')->where('id', $id)->first();
+            },
+            'job',
+            'province',
+            'district',
+        ])
+        ->withCount('likes')
+        ->withCount('courses')
+        ->where('id', $id)->first();
 
         return $user ? $user->toArray() : [];
     }
@@ -69,6 +76,42 @@ class UserRepository implements UserRepositoryInterface
 
     public function searchTutorList($input)
     {
+        $tutors = User::with('teachSubjects.teachSubjectClasses.class', 'teachSubjects.subject')
+            ->where('role_cd', Constants::CD_ROLE_TUTOR)
+            ->when(isset($input['subject_id']), function ($query) use ($input) {
+                $query->whereHas('teachSubjects', function ($sub_query) use ($input) {
+                    $sub_query->where('subject_id', $input['subject_id']);
+                });
+            })
+            ->when(isset($input['class_id']), function ($query) use ($input) {
+                $query->whereHas('teachSubjects.teachSubjectClasses', function ($sub_query) use ($input) {
+                    $sub_query->where('class_id', $input['class_id']);
+                }); 
+            })
+            ->when(isset($input['province_id']), function ($query) use ($input) {
+                $query->where('province_id', $input['province_id']);
+            })
+            ->when(isset($input['district_id']), function ($query) use ($input) {
+                $query->where('district_id', $input['district_id']);
+            })
+            ->when(isset($input['job_current_id']), function ($query) use ($input) {
+                $query->where('job_current_id', $input['job_current_id']);
+            })
+            ->when(isset($input['sex']), function ($query) use ($input) {
+                $query->where('sex', $input['sex']);
+            })
+            ->when(isset($input['type_cd']), function ($query) use ($input) {
+                $query->where('type_cd', $input['type_cd']);
+            })
+            ->when(isset($input['price_order_type']), function ($query) use ($input) {
+                if ($input['price_order_type'] === 1) {
+                    $query->orderBy('price', 'asc');
+                } else {
+                    $query->orderBy('price', 'desc');
+                }
+            })
+            ->paginate(8);
 
+        return $tutors ? $tutors->toArray() : [];
     }
 }

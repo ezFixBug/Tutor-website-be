@@ -7,29 +7,31 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 
-class OfferRequest extends BaseModel
+class RegisterCourse extends baseModel
 {
     use HasFactory, Notifiable, SoftDeletes; 
-
-    protected $table = 'offer_requests';
-    public $timestamps = true;
     
-    protected $casts = [
-        'id' => 'string',
-    ];
+    protected $table = 'register_courses';
+    public $timestamps = true;
 
     public $fillable = [
         'id',
         'user_id',
-        'request_id',
+        'course_id',
         'status_cd',
+        'approve_at',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
-    public function request()
+    public function user()
     {
-        return $this->belongsTo(RequestTutor::class);
+        return $this->belongsToMany(User::class);
+    }
+
+    public function course() 
+    {
+        return $this->belongsTo(Course::class);
     }
 }
