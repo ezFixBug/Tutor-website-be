@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\AdminUser;
+use App\Models\Course;
 use App\Models\User;
 use App\Repositories\Interfaces\AdminUserRepositoryInterface;
 use Constants;
@@ -32,5 +33,14 @@ class AdminUserRepository implements AdminUserRepositoryInterface
             })->get();
 
         return $tutors ? $tutors->toArray() : [];
+    }
+
+    public function getCourses($input)
+    {
+        $courses = Course::with('user')
+            ->where('status_cd', $input['status_cd'])
+            ->get();
+
+        return $courses ? $courses->toArray() : [];
     }
 }

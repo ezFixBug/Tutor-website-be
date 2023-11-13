@@ -101,5 +101,9 @@ Route::group(['middleware' => ['auth:api']], function () {
 Route::group(['middleware' => ['auth:admin']], function () {
     Route::group(['prefix' => 'admin'], function(){
         Route::get('/tutors', [AdminController::class,'getTutors']);
+        Route::post('/approve/tutor/{user_id}', [AdminController::class,'approveRequestTutor']);
+
+        Route::get('/courses', [AdminController::class,'getCourses']);
+        Route::post('/approve/course/{courser_id}', [AdminController::class,'approveCourse']);
     });
 });
