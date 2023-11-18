@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RequestTutorRequest;
 use App\Repositories\Interfaces\RequestTutorRepositoryInterface;
 use Illuminate\Http\Request;
+use App\Constants;
 
 class RequestTutorController extends Controller
 {
@@ -19,11 +20,21 @@ class RequestTutorController extends Controller
     {
         $input = $request->all();
 
-        $this->request_tutor_repository->createOrUpdateRequest($input);
+        $request_id = $this->request_tutor_repository->createOrUpdateRequest($input);
+
+        if ($input['tutor_id']) {
+            $data = [
+                'request_id' => $request_id,
+                'user_id' => $input['tutor_id'],
+                'status_cd' => Constants::CD_OFFER_REQUEST_APPROVE,
+            ];
+            $this->request_tutor_repository->createOfferOfRequest($data);
+        }
 
         return response()->json([
             'status' => 200,
-            'result' => true
+            'result' => true,
+            'request_id' => $request_id
         ], 200);
     }
 
@@ -137,5 +148,16 @@ class RequestTutorController extends Controller
     public function approveOffer($request_id)
     {
         $this->request_tutor_repository->approveOfferOfRequest($request_id);
+    }
+
+    public function getRequested($user_id)
+    {
+        $requests = $this->request_tutor_repository->getRequested($user_id);
+
+        return response()->json([
+            'status' => 200,
+            'result' => true,
+            'requests' => $requests
+        ], 200);
     }
 }

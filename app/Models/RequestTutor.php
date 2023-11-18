@@ -32,6 +32,7 @@ class RequestTutor extends BaseModel
         'price',
         'sex',
         'user_id',
+        'tutor_id',
         'description',
         'schedule',
         'schedule',

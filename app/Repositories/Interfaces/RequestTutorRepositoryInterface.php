@@ -24,4 +24,5 @@ interface RequestTutorRepositoryInterface
 
     public function approveOfferOfRequest($request_id);
 
+    public function getRequested($user_id);
 }

@@ -277,4 +277,15 @@ class CourseController extends Controller
             'students' => $students
         ]);
     }
+
+    public function getCoursesRegisted($user_id)
+    {
+        $courses = $this->course_repo->getCoursesRegisted($user_id);
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'courses' => $courses
+        ]);
+    }
 }

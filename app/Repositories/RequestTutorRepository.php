@@ -93,4 +93,15 @@ class RequestTutorRepository implements RequestTutorRepositoryInterface
     {
         return OfferRequest::where('request_id', $request_id)->where('user_id', Auth::id())->exists();
     }
+
+    public function getRequested($user_id)
+    {
+        $requests = RequestTutor::with('subject', 'class', 'user', 'offers')
+            ->whereHas('offers', function ($query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            })
+            ->get();
+
+        return $requests ? $requests->toArray() : [];
+    }
 }

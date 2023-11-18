@@ -168,7 +168,7 @@ class CourseRepository implements CourseRepositoryInterface
             ->where('register_courses.course_id', $course_id)
             ->select('users.*', 'register_courses.approve_at', 'register_courses.id as register_course_id')
             ->get();
-        $students->each(function ($student) use ($course_id){
+        $students->each(function ($student) use ($course_id) {
             $student->is_approved = RegisterCourse::where('course_id', $course_id)
                 ->where('user_id', $student->id)
                 ->where('status_cd', Constants::CD_REGISTER_COURSE_APPROVE)
@@ -176,5 +176,21 @@ class CourseRepository implements CourseRepositoryInterface
         });
 
         return $students ? $students->toArray() : [];
+    }
+
+    public function getCoursesRegisted($user_id)
+    {
+        $courses = Course::select('courses.*', 'register_courses.id as rc_id')
+            ->with('user')
+            ->with([
+                'classes' => function ($query) {
+                    $query->whereNull('course_classes.deleted_at');
+                }
+            ])
+            ->join('register_courses', 'courses.id', 'register_courses.course_id')
+            ->where('register_courses.user_id', '=', $user_id)
+            ->get();
+        
+        return $courses ? $courses->toArray() : [];
     }
 }

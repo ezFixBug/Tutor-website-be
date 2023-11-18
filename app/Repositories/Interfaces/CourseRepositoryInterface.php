@@ -33,4 +33,6 @@ interface CourseRepositoryInterface
     public function isRegisterCourse($course_id);
 
     public function getStudentsByCoureId($course_id);
+
+    public function getCoursesRegisted($user_id);
 }
