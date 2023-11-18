@@ -52,6 +52,9 @@ Route::get('/courses', [CourseController::class, 'getCourses']);
 Route::get('/requests', [RequestTutorController::class, 'getRequests']);
 Route::get('/detail-request/{request_id}', [RequestTutorController::class, 'getDetailRequest']);
 
+Route::get('/courses-registed/{user_id}', [CourseController::class, 'getCoursesRegisted']);
+Route::get('/requested/{user_id}', [RequestTutorController::class, 'getRequested']);
+
 // admin login
 Route::post('/admin/login', [AdminController::class, 'login']);
 
