@@ -108,5 +108,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
 
         Route::get('/courses', [AdminController::class,'getCourses']);
         Route::post('/approve/course/{courser_id}', [AdminController::class,'approveCourse']);
+
+        Route::get('/statistics', [AdminController::class,'getStatistics']);
     });
 });
