@@ -116,4 +116,15 @@ class AdminController extends Controller
         ]);  
     }
 
+    public function getStatistics()
+    {
+        $statistics = $this->admin_user_repo->getStatistics();
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'statistics' => $statistics,
+        ]);  
+    }
+
 }

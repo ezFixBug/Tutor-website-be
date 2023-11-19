@@ -9,4 +9,6 @@ interface AdminUserRepositoryInterface
     public function getTutors($input);
 
     public function getCourses($input);
+
+    public function getStatistics();
 }

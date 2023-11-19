@@ -3,6 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\AdminUser;
+use App\Models\FeedBack;
+use App\Models\Post;
+use App\Models\RequestTutor;
 use App\Models\Course;
 use App\Models\User;
 use App\Repositories\Interfaces\AdminUserRepositoryInterface;
@@ -42,5 +45,19 @@ class AdminUserRepository implements AdminUserRepositoryInterface
             ->get();
 
         return $courses ? $courses->toArray() : [];
+    }
+
+    public function getStatistics()
+    {
+        $data = [
+            'total_tutor' => User::where('role_cd', Constants::CD_ROLE_TUTOR)->count(),
+            'total_user' => User::where('role_cd', Constants::CD_ROLE_STUDENT)->count(),
+            'total_feedback' => FeedBack::count(),
+            'total_request' => RequestTutor::count(),
+            'total_post' => Post::count(),
+            'total_course' => Course::where('status_cd', Constants::CD_ACCEPT)->count(),
+        ];
+
+        return $data;
     }
 }
