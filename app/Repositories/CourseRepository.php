@@ -142,7 +142,7 @@ class CourseRepository implements CourseRepositoryInterface
 
     public function saveOrUpdateRegisterCourse($input)
     {
-        RegisterCourse::saveOrUpdateWithUuid($input);
+        return RegisterCourse::saveOrUpdateWithUuid($input);
     }
 
     public function findRegisterCourse($id)
