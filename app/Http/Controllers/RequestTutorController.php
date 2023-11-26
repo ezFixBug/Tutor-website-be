@@ -22,7 +22,7 @@ class RequestTutorController extends Controller
 
         $request_id = $this->request_tutor_repository->createOrUpdateRequest($input);
 
-        if ($input['tutor_id']) {
+        if (isset($input['tutor_id'])) {
             $data = [
                 'request_id' => $request_id,
                 'user_id' => $input['tutor_id'],
