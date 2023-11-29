@@ -17,7 +17,7 @@ class CreatePaymentsTable extends Migration
             $table->id();
             $table->uuid('user_id')->nullable();
             $table->uuid('register_course_id')->nullable();
-            $table->uuid('register_tutor_id')->nullable();
+            $table->uuid('offer_request_id')->nullable();
             $table->string('amount')->nullable();
             $table->string('bank_code')->nullable();
             $table->string('bank_transaction_no')->nullable();
@@ -36,7 +36,7 @@ class CreatePaymentsTable extends Migration
             $table->softDeletes();
 
             $table->foreign('register_course_id')->references('id')->on('register_courses');
-            $table->foreign('register_tutor_id')->references('id')->on('request_tutors');
+            $table->foreign('offer_request_id')->references('id')->on('offer_requests');
             $table->foreign('user_id')->references('id')->on('users');
         });
     }

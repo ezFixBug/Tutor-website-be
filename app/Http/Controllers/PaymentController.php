@@ -4,21 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Constants;
 use App\Models\Payments;
+use App\Repositories\Interfaces\PaymentRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
+    private $payment_interface;
+
+    public function __construct(PaymentRepositoryInterface $payment_interface)
+    {
+        $this->payment_interface = $payment_interface;
+    }
     public function getVnPayment(Request $request)
     {
         $data = $request->all();
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = $data['payment_type'] == Constants::PAYMENT_COURSE ? "http://localhost:8080/chi-tiet-khoa-hoc/" . $data['course_id'] : 'http://localhost:8080';
+        $vnp_Returnurl = $data['payment_type'] == Constants::PAYMENT_COURSE ? "http://localhost:8080/chi-tiet-khoa-hoc/" . $data['course_id'] : 'http://localhost:8080/chi-tiet-yeu-cau/' . $data['request_tutors_id'];
         $vnp_TmnCode = "97C1R16B";
         $vnp_HashSecret = "CTAWNGHKAEUFZPCFVUUPJBKTMZKBRQEG";
 
         $vnp_TxnRef = Carbon::now()->timestamp;
-        $vnp_OrderInfo = $data['payment_type'] == Constants::PAYMENT_COURSE ? 'Thanh toán mua khoá học' : 'Thanh toán nhận lớp';
+        $vnp_OrderInfo = $data['payment_type'] == Constants::PAYMENT_COURSE ? 'Thanh toán mua khoá học' : 'Thanh toán nhận học viên';
         $vnp_OrderType =  'billpayment';
         $vnp_Amount = $data['total_amount'] * 100;
         $vnp_Locale = 'vn';
@@ -69,24 +76,6 @@ class PaymentController extends Controller
 
     public function createPayment(Request $request)
     {
-        $data = $request->all();
-        Payments::create([
-            'user_id' => $data['user_id'],
-            'register_course_id' => $data['register_course_id'],
-            'amount' => $data['payment']['vnp_Amount'],
-            'bank_code' => $data['payment']['vnp_BankCode'],
-            'bank_transaction_no' => $data['payment']['vnp_BankTranNo'],
-            'card_type' => $data['payment']['vnp_CardType'],
-            'order_info' => $data['payment']['vnp_OrderInfo'],
-            'pay_date' => $data['payment']['vnp_PayDate'],
-            'response_code' => $data['payment']['vnp_PayDate'],
-            'tmn_code' => $data['payment']['vnp_TmnCode'],
-            'transaction_no' => $data['payment']['vnp_TransactionNo'],
-            'transaction_status' => $data['payment']['vnp_TransactionStatus'],
-            'txn_ref' => $data['payment']['vnp_TxnRef'],
-            'secure_hash' => $data['payment']['vnp_SecureHash'],
-            'status' => 1,
-            'payment_type' => $data['payment_type'],
-        ]);
+        $this->payment_interface->createPayment($request->all());
     }
 }

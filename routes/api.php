@@ -96,6 +96,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     //request tutors
     Route::post('/request-tutor', [RequestTutorController::class, 'createRequest']);
     Route::get('/request-tutors/{user_id}', [RequestTutorController::class, 'getRequestOfUser']);
+    Route::get('/offer-detail/{id}', [RequestTutorController::class, 'getOfferDetail']);
     Route::get('/offer-requests/{request_id}', [RequestTutorController::class, 'getOfferOfRequest']);
     Route::delete('/delete-request/{request_id}', [RequestTutorController::class, 'deleteRequest']);
     Route::post('/offer-request/{request_id}', [RequestTutorController::class, 'createOfferRequest']);
@@ -104,14 +105,14 @@ Route::group(['middleware' => ['auth:api']], function () {
 
 
     Route::prefix('payment')->group(function () {
-        Route::prefix('users')->group(function () {
-            Route::post('/intents', 'StripleController@paymentIntents');
-            Route::patch('/intents', 'StripleController@updatePaymentIntents');
-            Route::post('/setup_intents', 'StripleController@setupIntents');
-            Route::prefix('methods')->group(function () {
-                Route::get('/', 'StripleController@getPaymentMethods');
-            });
-        });
+        // Route::prefix('users')->group(function () {
+        //     Route::post('/intents', 'StripleController@paymentIntents');
+        //     Route::patch('/intents', 'StripleController@updatePaymentIntents');
+        //     Route::post('/setup_intents', 'StripleController@setupIntents');
+        //     Route::prefix('methods')->group(function () {
+        //         Route::get('/', 'StripleController@getPaymentMethods');
+        //     });
+        // });
         Route::post('/create', [PaymentController::class, 'createPayment']);
     });
     

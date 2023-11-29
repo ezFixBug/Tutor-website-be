@@ -4,5 +4,5 @@ namespace App\Repositories\Interfaces;
 
 interface PaymentRepositoryInterface
 {
-  public function getVnPayPaymentLink();
+  public function createPayment($data);
 }
