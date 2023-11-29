@@ -233,9 +233,10 @@ class CourseController extends Controller
     {
         $input = $request->all();
 
-        $this->course_repo->saveOrUpdateRegisterCourse($input);
+        $register_course = $this->course_repo->saveOrUpdateRegisterCourse($input);
 
         return response()->json([
+            'register_course' => $register_course,
             'result' => true,
             'status' => 200,
         ]);

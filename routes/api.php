@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FeedBackController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProvinceController;
 use App\Http\Controllers\RequestTutorController;
 use App\Http\Controllers\UserController;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -94,11 +96,27 @@ Route::group(['middleware' => ['auth:api']], function () {
     //request tutors
     Route::post('/request-tutor', [RequestTutorController::class, 'createRequest']);
     Route::get('/request-tutors/{user_id}', [RequestTutorController::class, 'getRequestOfUser']);
+    Route::get('/offer-detail/{id}', [RequestTutorController::class, 'getOfferDetail']);
     Route::get('/offer-requests/{request_id}', [RequestTutorController::class, 'getOfferOfRequest']);
     Route::delete('/delete-request/{request_id}', [RequestTutorController::class, 'deleteRequest']);
     Route::post('/offer-request/{request_id}', [RequestTutorController::class, 'createOfferRequest']);
     Route::delete('/cancel-offer/{request_id}', [RequestTutorController::class, 'cancelOffer']);
     Route::post('approve-offer/{request_id}', [RequestTutorController::class, 'approveOffer']);
+
+
+    Route::prefix('payment')->group(function () {
+        // Route::prefix('users')->group(function () {
+        //     Route::post('/intents', 'StripleController@paymentIntents');
+        //     Route::patch('/intents', 'StripleController@updatePaymentIntents');
+        //     Route::post('/setup_intents', 'StripleController@setupIntents');
+        //     Route::prefix('methods')->group(function () {
+        //         Route::get('/', 'StripleController@getPaymentMethods');
+        //     });
+        // });
+        Route::post('/create', [PaymentController::class, 'createPayment']);
+    });
+    
+    Route::post('/vn-pay', [PaymentController::class, 'getVnPayment']);
 });
 
 Route::group(['middleware' => ['auth:admin']], function () {

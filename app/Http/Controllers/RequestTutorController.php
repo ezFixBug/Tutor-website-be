@@ -78,6 +78,17 @@ class RequestTutorController extends Controller
             'users' => $users
         ], 200);
     }
+    
+    public function getOfferDetail($id)
+    {
+        $offer = $this->request_tutor_repository->getOfferDetail($id);
+
+        return response()->json([
+            'status' => 200,
+            'result' => true,
+            'offer' => $offer
+        ], 200);
+    }
 
     public function deleteRequest($request_id)
     {
@@ -145,9 +156,11 @@ class RequestTutorController extends Controller
         ], 200);
     }
 
-    public function approveOffer($request_id)
+    public function approveOffer($request_id, Request $request)
     {
-        $this->request_tutor_repository->approveOfferOfRequest($request_id);
+        $data = $request->all();
+        $user_id = $data['user_id'];
+        return $this->request_tutor_repository->approveOfferOfRequest($request_id, $user_id);
     }
 
     public function getRequested($user_id)

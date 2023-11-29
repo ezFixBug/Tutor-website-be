@@ -57,6 +57,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\AdminUserRepositoryInterface::class,
             \App\Repositories\AdminUserRepository::class
         );
+        $this->app->bind(
+            \App\Repositories\Interfaces\PaymentRepositoryInterface::class,
+            \App\Repositories\PaymentRepository::class
+        );
     }
 
     /**

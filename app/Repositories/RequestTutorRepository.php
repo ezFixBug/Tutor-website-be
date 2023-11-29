@@ -2,11 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Constants;
 use App\Models\OfferRequest;
 use App\Models\RequestTutor;
 use App\Repositories\Interfaces\RequestTutorRepositoryInterface;
 use Auth;
-use Constants;
 
 class RequestTutorRepository implements RequestTutorRepositoryInterface
 {
@@ -29,6 +29,7 @@ class RequestTutorRepository implements RequestTutorRepositoryInterface
     {
         $result = RequestTutor::with('user.district', 'user.province', 'class', 'subject')->withCount('offers')->find($id);
         $result->is_requested = $this->isRequested($result->id);
+        $result->offer_request = $this->getOfferByRequestIdAndUserId($result->id, Auth::id());
         return $result ? $result->toArray() : [];
     }
 
@@ -42,6 +43,17 @@ class RequestTutorRepository implements RequestTutorRepositoryInterface
         return $users_offer ? $users_offer->toArray() : [];
     }
 
+    public function getOfferByRequestIdAndUserId($request_id, $user_id)
+    {
+        return OfferRequest::where([
+            'user_id' => $user_id,
+            'request_id' => $request_id
+        ])->first();
+    }
+    public function getOfferDetail($id)
+    {
+        return OfferRequest::with('request')->find($id);
+    }
     public function deleteRequest($request_id)
     {
         RequestTutor::where('id', $request_id)->delete();
@@ -60,13 +72,14 @@ class RequestTutorRepository implements RequestTutorRepositoryInterface
             ->when(isset($input['course_type_cd']), function ($query) use ($input) {
                 $query->where('course_type_cd', $input['course_type_cd']);
             })
-            ->whereDoesntHave('offers', function ($query) {
-                $query->where('status_cd', Constants::CD_OFFER_REQUEST_APPROVE);
-            })
+            // ->whereDoesntHave('offers', function ($query) {
+            //     $query->where('status_cd', Constants::CD_OFFER_REQUEST_APPROVE);
+            // })
             ->paginate(6);
 
         $requests->each(function ($request) {
             $request->is_requested = $this->isRequested($request->id);
+            $request->offer_request = $this->getOfferByRequestIdAndUserId($request->id, Auth::id());
         });
 
         return $requests ? $requests->toArray() : [];
@@ -82,16 +95,18 @@ class RequestTutorRepository implements RequestTutorRepositoryInterface
         OfferRequest::where('request_id', $request_id)->where('user_id', Auth::id())->delete();
     }
 
-    public function approveOfferOfRequest($request_id)
+    public function approveOfferOfRequest($request_id, $user_id)
     {
-        OfferRequest::where('request_id', $request_id)->where('user_id', Auth::id())->update([
+        $offer = OfferRequest::where('request_id', $request_id)->where('user_id', $user_id)->first();
+        $offer->update([
             'status_cd' => Constants::CD_OFFER_REQUEST_APPROVE,
         ]);
+        return $offer;
     }
 
     private function isRequested($request_id)
     {
-        return OfferRequest::where('request_id', $request_id)->where('user_id', Auth::id())->exists();
+        return OfferRequest::where('request_id', $request_id)->where('user_id', Auth::id())->where('status_cd', 1)->exists();
     }
 
     public function getRequested($user_id)
