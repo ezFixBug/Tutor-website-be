@@ -114,6 +114,7 @@ Route::group(['middleware' => ['auth:api']], function () {
         //     });
         // });
         Route::post('/create', [PaymentController::class, 'createPayment']);
+        Route::get('/histories', [PaymentController::class, 'getHistories']);
     });
     
     Route::post('/vn-pay', [PaymentController::class, 'getVnPayment']);

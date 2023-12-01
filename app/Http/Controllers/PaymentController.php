@@ -78,4 +78,13 @@ class PaymentController extends Controller
     {
         $this->payment_interface->createPayment($request->all());
     }
+
+    public function getHistories(Request $request)
+    {
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'data' => $this->payment_interface->getHistories($request->all()),
+        ]);
+    }
 }
