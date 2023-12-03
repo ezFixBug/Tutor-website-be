@@ -12,11 +12,6 @@ class Payments extends Model
     use SoftDeletes;
     protected $guarded = ['id'];
 
-    public function offer()
-    {
-        return $this->belongsTo(OfferRequest::class);
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);

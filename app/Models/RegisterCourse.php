@@ -27,7 +27,7 @@ class RegisterCourse extends baseModel
 
     public function user()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function course() 

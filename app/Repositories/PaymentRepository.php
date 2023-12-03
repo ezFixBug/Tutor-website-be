@@ -54,12 +54,15 @@ class PaymentRepository implements PaymentRepositoryInterface
     foreach ($payments ?? [] as $key => $payment) {
       $total_amount += $payment['amount'];
       $payments[$key]->register_course = $payment->registerCourse;
+      $payments[$key]->register_course->course = $payments[$key]->register_course ? $payments[$key]->register_course->course : null;
+      $payments[$key]->register_course->course->user = $payments[$key]->register_course->course ? $payments[$key]->register_course->course->user : null;
+      $payments[$key]->register_course->user = $payments[$key]->register_course ? $payments[$key]->register_course->user : null;
       $payments[$key]->register_offer = $payment->registerOffer;
     }
 
     return [
       'total_amount' => $total_amount,
-      'payment' => $payments?->toArray() ?? [],
+      'payment' => $payments ? $payments->toArray() : [],
     ] ?? [];
   }
 }
