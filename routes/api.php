@@ -118,6 +118,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     });
     
     Route::post('/vn-pay', [PaymentController::class, 'getVnPayment']);
+    Route::post('/momo-payment', [PaymentController::class, 'getMomoPayment']);
 });
 
 Route::group(['middleware' => ['auth:admin']], function () {

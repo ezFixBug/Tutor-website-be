@@ -21,22 +21,23 @@ class PaymentRepository implements PaymentRepositoryInterface
       $offer = $this->request_tutor_repo->getOfferByRequestIdAndUserId($data['request_id'], $data['user_id']);
       $offer_id = $offer->id;
     }
+    $payment = $data['payment'];
     Payments::create([
       'user_id' => $data['user_id'],
       'register_course_id' => $data['register_course_id'] ?? null,
       'offer_request_id' => $offer_id,
-      'amount' => $data['payment']['vnp_Amount'] / 100,
-      'bank_code' => $data['payment']['vnp_BankCode'],
-      'bank_transaction_no' => $data['payment']['vnp_BankTranNo'],
-      'card_type' => $data['payment']['vnp_CardType'],
-      'order_info' => $data['payment']['vnp_OrderInfo'],
-      'pay_date' => $data['payment']['vnp_PayDate'],
-      'response_code' => $data['payment']['vnp_PayDate'],
-      'tmn_code' => $data['payment']['vnp_TmnCode'],
-      'transaction_no' => $data['payment']['vnp_TransactionNo'],
-      'transaction_status' => $data['payment']['vnp_TransactionStatus'],
-      'txn_ref' => $data['payment']['vnp_TxnRef'],
-      'secure_hash' => $data['payment']['vnp_SecureHash'],
+      'amount' => isset($payment['vnp_Amount']) ? $payment['vnp_Amount'] / 100 : $payment['amount'],
+      'bank_code' => isset($payment['vnp_BankCode']) ? $payment['vnp_BankCode'] : $payment['payType'],
+      'bank_transaction_no' => isset($payment['vnp_BankTranNo']) ? $payment['vnp_BankTranNo'] : $payment['transId'],
+      'card_type' => isset($payment['vnp_CardType']) ? $payment['vnp_CardType'] : $payment['paymentOption'],
+      'order_info' => isset($payment['vnp_OrderInfo']) ? $payment['vnp_OrderInfo'] : $payment['orderInfo'],
+      'pay_date' => isset($payment['vnp_PayDate']) ? $payment['vnp_PayDate'] : null,
+      'response_code' => isset($payment['vnp_PayDate']) ? $payment['vnp_PayDate'] : null,
+      'tmn_code' => isset($payment['vnp_TmnCode']) ? $payment['vnp_TmnCode'] : null,
+      'transaction_no' => isset($payment['vnp_TransactionNo']) ? $payment['vnp_TransactionNo'] : $payment['transId'],
+      'transaction_status' => isset($payment['vnp_TransactionStatus']) ? $payment['vnp_TransactionStatus'] : $payment['resultCode'],
+      'txn_ref' => isset($payment['vnp_TxnRef']) ? $payment['vnp_TxnRef'] : $payment['orderId'],
+      'secure_hash' => isset($payment['vnp_SecureHash']) ? $payment['vnp_SecureHash'] : $payment['signature'],
       'status' => 1,
       'payment_type' => $data['payment_type'],
     ]);
