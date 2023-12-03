@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Constants;
 use App\Models\Payments;
 use App\Repositories\Interfaces\PaymentRepositoryInterface;
 use Illuminate\Support\Facades\DB;
@@ -54,11 +55,15 @@ class PaymentRepository implements PaymentRepositoryInterface
 
     foreach ($payments ?? [] as $key => $payment) {
       $total_amount += $payment['amount'];
-      $payments[$key]->register_course = $payment->registerCourse;
-      $payments[$key]->register_course->course = $payments[$key]->register_course ? $payments[$key]->register_course->course : null;
-      $payments[$key]->register_course->course->user = $payments[$key]->register_course->course ? $payments[$key]->register_course->course->user : null;
-      $payments[$key]->register_course->user = $payments[$key]->register_course ? $payments[$key]->register_course->user : null;
-      $payments[$key]->register_offer = $payment->registerOffer;
+      if ($payment->payment_type == Constants::PAYMENT_COURSE) {
+        $payments[$key]->register_course = $payment->registerCourse;
+        $payments[$key]->register_course->course = $payments[$key]->register_course ? $payments[$key]->register_course->course : null;
+        $payments[$key]->register_course->course->user = $payments[$key]->register_course->course ? $payments[$key]->register_course->course->user : null;
+        $payments[$key]->register_course->user = $payments[$key]->register_course ? $payments[$key]->register_course->user : null;
+      } else {
+        $payments[$key]->register_offer = $payment->registerOffer;
+        $payments[$key]->register_offer->request = $payment->registerOffer->request;
+      }
     }
 
     return [
