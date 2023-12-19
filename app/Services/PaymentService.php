@@ -77,8 +77,8 @@ class PaymentService
       : 'Thanh toán nhận học viên';;
     $amount = $data['total_amount'];
     $orderId = time() . "";
-    $redirectUrl = Constants::PAYMENT_COURSE
-      ? "http://localhost:8080/chi-tiet-khoa-hoc/" . $data['course_id']
+    $redirectUrl = $data['payment_type'] == Constants::PAYMENT_COURSE
+      ? 'http://localhost:8080/chi-tiet-khoa-hoc/' . $data['course_id']
       : 'http://localhost:8080/chi-tiet-yeu-cau/' . $data['request_tutors_id'];
     $ipnUrl = $redirectUrl;
     $extraData = "";
