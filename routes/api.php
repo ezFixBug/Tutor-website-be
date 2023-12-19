@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FeedBackController;
 use App\Http\Controllers\PaymentController;
@@ -116,19 +117,33 @@ Route::group(['middleware' => ['auth:api']], function () {
         Route::post('/create', [PaymentController::class, 'createPayment']);
         Route::get('/histories', [PaymentController::class, 'getHistories']);
     });
-    
+
     Route::post('/vn-pay', [PaymentController::class, 'getVnPayment']);
     Route::post('/momo-payment', [PaymentController::class, 'getMomoPayment']);
+
+    Route::group(['prefix' => 'coupons'], function () {
+        Route::get('/{code}', [CouponController::class, 'getCouponByCode']);
+    });
 });
 
 Route::group(['middleware' => ['auth:admin']], function () {
-    Route::group(['prefix' => 'admin'], function(){
-        Route::get('/tutors', [AdminController::class,'getTutors']);
-        Route::post('/approve/tutor/{user_id}', [AdminController::class,'approveRequestTutor']);
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('/tutors', [AdminController::class, 'getTutors']);
+        Route::post('/approve/tutor/{user_id}', [AdminController::class, 'approveRequestTutor']);
 
-        Route::get('/courses', [AdminController::class,'getCourses']);
-        Route::post('/approve/course/{courser_id}', [AdminController::class,'approveCourse']);
+        Route::get('/courses', [AdminController::class, 'getCourses']);
+        Route::post('/approve/course/{courser_id}', [AdminController::class, 'approveCourse']);
 
-        Route::get('/statistics', [AdminController::class,'getStatistics']);
+        Route::get('/statistics', [AdminController::class, 'getStatistics']);
+
+        Route::group(['prefix' => 'coupons'], function () {
+            Route::get('/', [CouponController::class, 'getList']);
+            Route::post('/create', [CouponController::class, 'create']);
+            Route::prefix('{id}')->group(function () {
+                Route::get('/', [CouponController::class, 'show']);
+                Route::post('/', [CouponController::class, 'update']);
+                Route::delete('/', [CouponController::class, 'delete']);
+            });
+        });
     });
 });
