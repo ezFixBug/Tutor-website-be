@@ -61,6 +61,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\PaymentRepositoryInterface::class,
             \App\Repositories\PaymentRepository::class
         );
+        $this->app->bind(
+            \App\Repositories\Interfaces\CouponRepositoryInterface::class,
+            \App\Repositories\CouponRepository::class
+        );
     }
 
     /**

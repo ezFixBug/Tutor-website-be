@@ -38,4 +38,7 @@ class Constants
 
     public const PAYMENT_COURSE = 0;
     public const PAYMENT_TUTOR = 1;
+
+    public const COUPON_TYPE_VND = 0;
+    public const COUPON_TYPE_PERCENT = 1;
 }
