@@ -11,6 +11,7 @@ use App\Http\Controllers\RequestTutorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\RatingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,8 +50,16 @@ Route::get('/comments/{relation_id}', [CommentController::class, 'getComments'])
 
 Route::get('/feedbacks', [FeedBackController::class, 'getAllFeedback']);
 
-Route::get('/course/{course_id}', [CourseController::class, 'getDetailCourse']);
 Route::get('/courses', [CourseController::class, 'getCourses']);
+
+Route::group(['prefix' => 'course'], function () {
+    Route::group(['prefix' => '{course_id}'], function () {
+        Route::get('/', [CourseController::class, 'getDetailCourse']);
+        Route::group(['prefix' => 'rating'], function () {
+            Route::post('/', [RatingController::class, 'create']);
+        });
+    });
+});
 
 Route::get('/requests', [RequestTutorController::class, 'getRequests']);
 Route::get('/detail-request/{request_id}', [RequestTutorController::class, 'getDetailRequest']);

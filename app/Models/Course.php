@@ -82,4 +82,9 @@ class Course extends BaseModel
     {
         return $this->hasMany(Like::class, 'relation_id');
     }
+
+    public function rating()
+    {
+        return $this->hasMany(RatingCourse::class);
+    }
 }

@@ -59,9 +59,19 @@ class CourseRepository implements CourseRepositoryInterface
                     $query->whereNull('course_subjects.deleted_at');
                 }
             ])
-            ->with('user')
+            ->with(['user', 'rating'])
             ->withCount('likes')
             ->find($course_id);
+
+        $course->rating_avg = 0;
+
+        if ($course->rating->count() > 0) {
+            foreach ($course->rating as $rating) {
+                $course->rating_avg += $rating->rating;
+            }
+            $course->rating_avg /= count($course->rating);
+        }
+
 
         return $course ? $course->toArray() : [];
     }
@@ -190,7 +200,7 @@ class CourseRepository implements CourseRepositoryInterface
             ->join('register_courses', 'courses.id', 'register_courses.course_id')
             ->where('register_courses.user_id', '=', $user_id)
             ->get();
-        
+
         return $courses ? $courses->toArray() : [];
     }
 }
