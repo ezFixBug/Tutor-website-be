@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\RequestTutor;
 use App\Models\TeachPlace;
 use App\Models\TeachPlaceDistricts;
 use App\Models\TeachSubject;
@@ -9,6 +10,7 @@ use App\Models\TeachSubjectClasses;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Constants;
+
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -45,9 +47,9 @@ class UserRepository implements UserRepositoryInterface
                 $query->with('user');
             }
         ])
-        ->withCount('likes')
-        ->withCount('courses')
-        ->where('id', $id)->first();
+            ->withCount('likes')
+            ->withCount('courses')
+            ->where('id', $id)->first();
         $user->rating_avg = 0;
 
         if ($user->rating->count() > 0) {
@@ -56,7 +58,17 @@ class UserRepository implements UserRepositoryInterface
             }
             $user->rating_avg /= count($user->rating);
         }
+        $user->is_register = $this->checkHaveBeenRegisterByUserId($user->id);
         return $user ? $user->toArray() : [];
+    }
+
+    public function checkHaveBeenRegisterByUserId($userId)
+    {
+        return RequestTutor::with('subject', 'class', 'user', 'offers')
+            ->whereHas('offers', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->exists();
     }
 
     public function updateUser($input)
@@ -96,7 +108,7 @@ class UserRepository implements UserRepositoryInterface
             ->when(isset($input['class_id']), function ($query) use ($input) {
                 $query->whereHas('teachSubjects.teachSubjectClasses', function ($sub_query) use ($input) {
                     $sub_query->where('class_id', $input['class_id']);
-                }); 
+                });
             })
             ->when(isset($input['province_id']), function ($query) use ($input) {
                 $query->where('province_id', $input['province_id']);
