@@ -59,7 +59,9 @@ class CourseRepository implements CourseRepositoryInterface
                     $query->whereNull('course_subjects.deleted_at');
                 }
             ])
-            ->with(['user', 'rating'])
+            ->with(['user', 'rating' => function ($query) {
+                $query->with('user');
+            }])
             ->withCount('likes')
             ->find($course_id);
 
