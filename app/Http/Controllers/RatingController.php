@@ -14,10 +14,26 @@ class RatingController extends Controller
     {
         $this->ratingInterface = $ratingInterface;
     }
-    public function create(Request $request)
+    public function createRatingCourse(Request $request)
     {
         try {
-            $this->ratingInterface->create($request);
+            $this->ratingInterface->ratingCourse($request);
+            return response()->json([
+                'result' => true,
+                'status' => 200,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'result' => false,
+                'status' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function createRatingTutor(Request $request)
+    {
+        try {
+            $this->ratingInterface->ratingTutor($request);
             return response()->json([
                 'result' => true,
                 'status' => 200,
