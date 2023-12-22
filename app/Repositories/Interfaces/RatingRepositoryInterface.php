@@ -4,5 +4,6 @@ namespace App\Repositories\Interfaces;
 
 interface RatingRepositoryInterface
 {
-  public function create($data);
+  public function ratingCourse($data);
+  public function ratingTutor($data);
 }

@@ -41,11 +41,19 @@ class UserRepository implements UserRepositoryInterface
             'job',
             'province',
             'district',
+            'rating'
         ])
         ->withCount('likes')
         ->withCount('courses')
         ->where('id', $id)->first();
+        $user->rating_avg = 0;
 
+        if ($user->rating->count() > 0) {
+            foreach ($user->rating as $rating) {
+                $user->rating_avg += $rating->rating;
+            }
+            $user->rating_avg /= count($user->rating);
+        }
         return $user ? $user->toArray() : [];
     }
 

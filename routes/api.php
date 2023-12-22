@@ -33,7 +33,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // User
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
-Route::get('/user/{id}', [UserController::class, 'getUserById']);
+Route::group(['prefix' => 'user'], function () {
+    Route::group(['prefix' => '{id}'], function () {
+        Route::get('/', [UserController::class, 'getUserById']);
+        Route::group(['prefix' => 'rating'], function () {
+            Route::post('/', [RatingController::class, 'createRatingTutor']);
+        });
+    });
+});
 Route::get('/tutors', [UserController::class, 'getListTutor']);
 
 Route::get('/provinces', [ProvinceController::class, 'getAllProvinces']);
@@ -56,7 +63,7 @@ Route::group(['prefix' => 'course'], function () {
     Route::group(['prefix' => '{course_id}'], function () {
         Route::get('/', [CourseController::class, 'getDetailCourse']);
         Route::group(['prefix' => 'rating'], function () {
-            Route::post('/', [RatingController::class, 'create']);
+            Route::post('/', [RatingController::class, 'createRatingCourse']);
         });
     });
 });
