@@ -41,7 +41,9 @@ class UserRepository implements UserRepositoryInterface
             'job',
             'province',
             'district',
-            'rating'
+            'rating' => function ($query) {
+                $query->with('user');
+            }
         ])
         ->withCount('likes')
         ->withCount('courses')
