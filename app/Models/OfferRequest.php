@@ -23,6 +23,7 @@ class OfferRequest extends BaseModel
         'user_id',
         'request_id',
         'status_cd',
+        'status_student_cd',
         'created_at',
         'updated_at',
         'deleted_at',

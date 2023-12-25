@@ -27,6 +27,7 @@ class RequestTutorController extends Controller
                 'request_id' => $request_id,
                 'user_id' => $input['tutor_id'],
                 'status_cd' => Constants::CD_OFFER_REQUEST_APPROVE,
+                'status_student_cd' => Constants::CD_OFFER_REQUEST_DEFAULT,
             ];
             $this->request_tutor_repository->createOfferOfRequest($data);
         }
@@ -171,6 +172,34 @@ class RequestTutorController extends Controller
             'status' => 200,
             'result' => true,
             'requests' => $requests
+        ], 200);
+    }
+
+    public function getOfferStudent()
+    {
+        $offers = $this->request_tutor_repository->getOfferStudent();
+
+        return response()->json([
+            'status' => 200,
+            'result' => true,
+            'offers' => $offers
+        ], 200);
+    }
+
+    public function approveOfferStudent(Request $request) 
+    {
+        $input = $request->all();
+
+        $offer = $this->request_tutor_repository->getOfferDetail($input['offer_id'])->toArray();
+
+        $offer['status_cd'] = Constants::CD_OFFER_REQUEST_APPROVE;
+        $offer['status_student_cd'] = Constants::CD_OFFER_REQUEST_APPROVE;
+
+        $this->request_tutor_repository->createOfferOfRequest($offer);
+
+        return response()->json([
+            'status' => 200,
+            'result' => true,
         ], 200);
     }
 }

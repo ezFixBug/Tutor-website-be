@@ -27,4 +27,6 @@ interface RequestTutorRepositoryInterface
     public function approveOfferOfRequest($request_id, $user_id);
 
     public function getRequested($user_id);
+
+    public function getOfferStudent();
 }

@@ -74,6 +74,13 @@ Route::get('/detail-request/{request_id}', [RequestTutorController::class, 'getD
 Route::get('/courses-registed/{user_id}', [CourseController::class, 'getCoursesRegisted']);
 Route::get('/requested/{user_id}', [RequestTutorController::class, 'getRequested']);
 
+Route::get('/student/request', [RequestTutorController::class, 'getOfferStudent']);
+Route::post('/student/request', [RequestTutorController::class, 'approveOfferStudent']);
+
+
+    //feedback 
+    Route::post('/feedback', [FeedBackController::class, 'addFeedBack']);
+
 // admin login
 Route::post('/admin/login', [AdminController::class, 'login']);
 
@@ -107,8 +114,6 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::get('/register/course/{course_id}', [CourseController::class, 'getRegisterCourses']);
     Route::get('/course/students/{course_id}', [CourseController::class, 'getStudents']);
 
-    //feedback 
-    Route::post('/feedback', [FeedBackController::class, 'addFeedBack']);
 
     //request tutors
     Route::post('/request-tutor', [RequestTutorController::class, 'createRequest']);

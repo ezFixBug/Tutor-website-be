@@ -119,4 +119,16 @@ class RequestTutorRepository implements RequestTutorRepositoryInterface
 
         return $requests ? $requests->toArray() : [];
     }
+
+    public function getOfferStudent()
+    {
+        $requests = RequestTutor::with('subject', 'class', 'user', 'offers')
+            ->whereHas('offers', function ($query) {
+                $query->where('user_id', Auth::id())
+                    ->whereNotNull('status_student_cd');
+            })
+            ->get();
+
+        return $requests ? $requests->toArray() : [];
+    }
 }

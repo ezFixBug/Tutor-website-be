@@ -6,6 +6,8 @@ use App\Constants;
 use App\Models\Payments;
 use App\Repositories\Interfaces\PaymentRepositoryInterface;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\OfferRequest;
 
 class PaymentRepository implements PaymentRepositoryInterface
 {
@@ -20,6 +22,13 @@ class PaymentRepository implements PaymentRepositoryInterface
     $offer_id = null;
     if ($data['user_id'] && isset($data['request_id'])) {
       $offer = $this->request_tutor_repo->getOfferByRequestIdAndUserId($data['request_id'], $data['user_id']);
+      if (!$offer) {
+        $offer = OfferRequest::where([
+            'request_id' => $data['request_id'],
+          ])
+          ->orderBy('created_at', 'desc')
+          ->first();
+      }
       $offer_id = $offer->id;
     }
     $payment = $data['payment'];
