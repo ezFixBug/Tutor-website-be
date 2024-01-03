@@ -134,6 +134,16 @@ class UserRepository implements UserRepositoryInterface
             })
             ->paginate(8);
 
+        foreach ($tutors as $key => $tutor) {
+            $tutors[$key]->rating_avg = 0;
+            if ($tutor->rating->count() > 0) {
+                foreach ($tutor->rating as $rate) {
+                    $tutors[$key]->rating_avg += $rate->rating;
+                }
+                $tutors[$key]->rating_avg /= count($tutor->rating);
+            }
+        }
+
         return $tutors ? $tutors->toArray() : [];
     }
 }
