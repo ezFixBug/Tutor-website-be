@@ -24,8 +24,8 @@ class PaymentRepository implements PaymentRepositoryInterface
       $offer = $this->request_tutor_repo->getOfferByRequestIdAndUserId($data['request_id'], $data['user_id']);
       if (!$offer) {
         $offer = OfferRequest::where([
-            'request_id' => $data['request_id'],
-          ])
+          'request_id' => $data['request_id'],
+        ])
           ->orderBy('created_at', 'desc')
           ->first();
       }
@@ -79,5 +79,37 @@ class PaymentRepository implements PaymentRepositoryInterface
       'total_amount' => $total_amount,
       'payment' => $payments ? $payments->toArray() : [],
     ] ?? [];
+  }
+  public function statistics($data)
+  {
+    $payments = Payments::where([
+      'user_id' => $data['user_id']
+    ])->get();
+
+    $amount_spent = 0;
+    $total_revenue = 0;
+
+    foreach ($payments ?? [] as $payment) {
+      $amount_spent += $payment['amount'];
+    }
+
+    $all_payment = Payments::all();
+
+    foreach ($all_payment ?? [] as $payment) {
+      if (
+        $payment->payment_type == Constants::PAYMENT_COURSE
+        && $payment
+        && $payment->registerCourse
+        && $payment->registerCourse->course
+        && $payment->registerCourse->course->user_id == $data['user_id']
+      ) {
+        $total_revenue += $payment->amount;
+      }
+    }
+
+    return [
+      'amount_spent' => $amount_spent,
+      'total_revenue' => $total_revenue
+    ];
   }
 }
