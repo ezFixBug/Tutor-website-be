@@ -127,4 +127,43 @@ class AdminController extends Controller
         ]);  
     }
 
+    public function getListUsers()
+    {
+        $users = $this->admin_user_repo->getListUsers();
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'users' => $users,
+        ]);
+    }
+
+    public function blockUser(Request $request, string $id){
+        $this->admin_user_repo->blockUserById($id, $request->all());
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+        ]);
+    }
+    public function deleteUser(string $id){
+        $this->admin_user_repo->deleteUser($id);
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+        ]);
+    }
+
+    public function getListReportedUsers()
+    {
+            $users = $this->admin_user_repo->getListReportedUsers();
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'users' => $users,
+        ]);
+    }
+
 }

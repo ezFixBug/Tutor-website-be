@@ -155,4 +155,9 @@ class User extends BaseModel implements
     {
         return $this->hasMany(RatingTutor::class, 'tutor_id');
     }
+
+    public function reported()
+    {
+        return  $this->hasMany(Report::class, 'relation_id');
+    }
 }

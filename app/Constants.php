@@ -41,4 +41,7 @@ class Constants
 
     public const COUPON_TYPE_VND = 0;
     public const COUPON_TYPE_PERCENT = 1;
+
+    public const STATUS_ACTIVE = 1;
+    public const STATUS_INACTIVE = 0;
 }

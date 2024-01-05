@@ -11,4 +11,9 @@ interface AdminUserRepositoryInterface
     public function getCourses($input);
 
     public function getStatistics();
+
+    public function getListUsers();
+    public function blockUserById($id, $data);
+    public function deleteUser($id);
+    public function getListReportedUsers();
 }
