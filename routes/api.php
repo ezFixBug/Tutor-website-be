@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -99,6 +100,7 @@ Route::group(['middleware' => ['auth:api']], function () {
 
     // comment
     Route::post('/comment', [CommentController::class, 'addComment']);
+    Route::post('/report', [ReportController::class, 'addReport']);
 
     //like
     Route::post('/like/post', [PostController::class, 'hanleLike']);
@@ -164,6 +166,16 @@ Route::group(['middleware' => ['auth:admin']], function () {
                 Route::get('/', [CouponController::class, 'show']);
                 Route::post('/', [CouponController::class, 'update']);
                 Route::delete('/', [CouponController::class, 'delete']);
+            });
+        });
+
+        Route::group(['prefix' => 'users'], function () {
+            Route::get('/', [AdminController::class, 'getListUsers']);
+            Route::get('/reported', [AdminController::class, 'getListReportedUsers']);
+            Route::prefix('{id}')->group(function () {
+                Route::post('/block', [AdminController::class, 'blockUser']);
+                // Route::get('/', [FeedBackController::class, 'show']);
+                Route::delete('/', [AdminController::class, 'deleteUser']);
             });
         });
     });

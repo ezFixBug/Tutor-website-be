@@ -7,6 +7,7 @@ use App\Models\FeedBack;
 use App\Models\Post;
 use App\Models\RequestTutor;
 use App\Models\Course;
+use App\Models\Report;
 use App\Models\User;
 use App\Repositories\Interfaces\AdminUserRepositoryInterface;
 use Constants;
@@ -59,5 +60,46 @@ class AdminUserRepository implements AdminUserRepositoryInterface
         ];
 
         return $data;
+    }
+
+    public function getListUsers()
+    {
+        $users = User::get();
+
+        return $users ? $users->toArray() : [];
+    }
+
+    public function blockUserById($id, $data)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return false;
+        }
+
+        $user->status_cd = $data['status_cd'];
+        $user->save();
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return false;
+        }
+
+        $user->delete();
+    }
+
+    public function getListReportedUsers()
+    {
+        $users = User::with(['reported' => function ($query) {
+            $query->with('user');
+        }])
+            ->whereHas('reported')
+            ->get();
+
+        return $users ? $users->toArray() : [];
     }
 }

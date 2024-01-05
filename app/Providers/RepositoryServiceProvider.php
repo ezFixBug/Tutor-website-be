@@ -69,6 +69,10 @@ class RepositoryServiceProvider extends ServiceProvider
             \App\Repositories\Interfaces\RatingRepositoryInterface::class,
             \App\Repositories\RatingRepository::class
         );
+        $this->app->bind(
+            \App\Repositories\Interfaces\ReportRepositoryInterface::class,
+            \App\Repositories\ReportRepository::class
+        );
     }
 
     /**
