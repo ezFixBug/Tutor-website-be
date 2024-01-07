@@ -10,7 +10,7 @@ use App\Models\TeachSubjectClasses;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
 use Constants;
-
+use Auth;
 
 class UserRepository implements UserRepositoryInterface
 {
@@ -58,13 +58,15 @@ class UserRepository implements UserRepositoryInterface
             }
             $user->rating_avg /= count($user->rating);
         }
-        $user->is_register = $this->checkHaveBeenRegisterByUserId($user->id);
+        $user->is_register = $this->checkHaveBeenRegisterByUserId($id);
         return $user ? $user->toArray() : [];
     }
 
+    // kiểm tra gia sư đã học viên thuê chưa
     public function checkHaveBeenRegisterByUserId($userId)
     {
         return RequestTutor::with('subject', 'class', 'user', 'offers')
+        ->where('user_id', Auth::id())
             ->whereHas('offers', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })

@@ -155,7 +155,11 @@ Route::group(['middleware' => ['auth:admin']], function () {
         Route::get('/tutors', [AdminController::class, 'getTutors']);
         Route::post('/approve/tutor/{user_id}', [AdminController::class, 'approveRequestTutor']);
 
-        Route::get('/courses', [AdminController::class, 'getCourses']);
+        Route::group(['prefix' => 'courses'], function () {
+            Route::get('/', [AdminController::class, 'getCourses']);
+            Route::get('/reported', [AdminController::class, 'getListReportedCourses']);
+        });
+
         Route::post('/approve/course/{courser_id}', [AdminController::class, 'approveCourse']);
 
         Route::get('/statistics', [AdminController::class, 'getStatistics']);
@@ -172,7 +176,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
 
         Route::group(['prefix' => 'users'], function () {
             Route::get('/', [AdminController::class, 'getListUsers']);
-            Route::get('/reported', [AdminController::class, 'getListReportedUsers']);
+            Route::get('/reported', [AdminController::class, 'getListReportedTutors']);
             Route::prefix('{id}')->group(function () {
                 Route::post('/block', [AdminController::class, 'blockUser']);
                 // Route::get('/', [FeedBackController::class, 'show']);

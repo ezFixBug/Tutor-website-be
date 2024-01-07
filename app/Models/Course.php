@@ -87,4 +87,9 @@ class Course extends BaseModel
     {
         return $this->hasMany(RatingCourse::class);
     }
+
+    public function reported()
+    {
+        return  $this->hasMany(Report::class, 'relation_id');
+    }
 }

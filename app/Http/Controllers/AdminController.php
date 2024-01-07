@@ -55,7 +55,7 @@ class AdminController extends Controller
             'result' => true,
             'status' => 200,
             'tutors' => $tutors,
-        ]);  
+        ]);
     }
 
     public function approveRequestTutor($user_id)
@@ -67,7 +67,7 @@ class AdminController extends Controller
                 'result' => false,
                 'status' => 404,
                 'message' => "User does not exist"
-            ]);  
+            ]);
         }
 
         $user['role_cd'] = Constants::CD_ROLE_TUTOR;
@@ -78,7 +78,7 @@ class AdminController extends Controller
         return response()->json([
             'result' => true,
             'status' => 200,
-        ]);  
+        ]);
     }
 
     public function getCourses(Request $request)
@@ -91,7 +91,7 @@ class AdminController extends Controller
             'result' => true,
             'status' => 200,
             'courses' => $courses,
-        ]);  
+        ]);
     }
 
     public function approveCourse($course_id)
@@ -103,7 +103,7 @@ class AdminController extends Controller
                 'result' => false,
                 'status' => 404,
                 'message' => "Course does not exist"
-            ]);  
+            ]);
         }
 
         $course['status_cd'] = Constants::CD_ACCEPT;
@@ -113,7 +113,7 @@ class AdminController extends Controller
         return response()->json([
             'result' => true,
             'status' => 200,
-        ]);  
+        ]);
     }
 
     public function getStatistics()
@@ -124,7 +124,7 @@ class AdminController extends Controller
             'result' => true,
             'status' => 200,
             'statistics' => $statistics,
-        ]);  
+        ]);
     }
 
     public function getListUsers()
@@ -138,7 +138,8 @@ class AdminController extends Controller
         ]);
     }
 
-    public function blockUser(Request $request, string $id){
+    public function blockUser(Request $request, string $id)
+    {
         $this->admin_user_repo->blockUserById($id, $request->all());
 
         return response()->json([
@@ -146,7 +147,8 @@ class AdminController extends Controller
             'status' => 200,
         ]);
     }
-    public function deleteUser(string $id){
+    public function deleteUser(string $id)
+    {
         $this->admin_user_repo->deleteUser($id);
 
         return response()->json([
@@ -155,9 +157,9 @@ class AdminController extends Controller
         ]);
     }
 
-    public function getListReportedUsers()
+    public function getListReportedTutors()
     {
-            $users = $this->admin_user_repo->getListReportedUsers();
+        $users = $this->admin_user_repo->getListReportedTutors();
 
         return response()->json([
             'result' => true,
@@ -165,5 +167,14 @@ class AdminController extends Controller
             'users' => $users,
         ]);
     }
+    public function getListReportedCourses()
+    {
+        $courses = $this->admin_user_repo->getListReportedCourses();
 
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'courses' => $courses,
+        ]);
+    }
 }
