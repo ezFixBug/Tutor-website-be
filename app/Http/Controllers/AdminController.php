@@ -177,4 +177,14 @@ class AdminController extends Controller
             'courses' => $courses,
         ]);
     }
+
+    public function blockCourse($courseId, Request $request)
+    {
+        $this->admin_user_repo->blockCourseById($courseId, $request->all());
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+        ]);
+    }
 }

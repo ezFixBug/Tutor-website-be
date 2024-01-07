@@ -158,6 +158,9 @@ Route::group(['middleware' => ['auth:admin']], function () {
         Route::group(['prefix' => 'courses'], function () {
             Route::get('/', [AdminController::class, 'getCourses']);
             Route::get('/reported', [AdminController::class, 'getListReportedCourses']);
+            Route::group(['prefix' => '{courseId}'], function () {
+                Route::post('/block', [AdminController::class,'blockCourse']);
+            });
         });
 
         Route::post('/approve/course/{courser_id}', [AdminController::class, 'approveCourse']);

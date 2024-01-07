@@ -17,4 +17,5 @@ interface AdminUserRepositoryInterface
     public function deleteUser($id);
     public function getListReportedTutors();
     public function getListReportedCourses();
+    public function blockCourseById($id, $data);
 }
