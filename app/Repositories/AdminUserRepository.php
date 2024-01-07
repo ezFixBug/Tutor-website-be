@@ -92,7 +92,7 @@ class AdminUserRepository implements AdminUserRepositoryInterface
         $user->delete();
     }
 
-    public function getListReportedUsers()
+    public function getListReportedTutors()
     {
         $users = User::with(['reported' => function ($query) {
             $query->with('user');
@@ -101,5 +101,31 @@ class AdminUserRepository implements AdminUserRepositoryInterface
             ->get();
 
         return $users ? $users->toArray() : [];
+    }
+
+    public function getListReportedCourses()
+    {
+        $courses = Course::with([
+            'reported' => function ($query) {
+                $query->with('user');
+            },
+            'user'
+        ])->where('status_cd', '!=', 3)
+            ->whereHas('reported')
+            ->get();
+
+        return $courses ? $courses->toArray() : [];
+    }
+
+    public function blockCourseById($id, $data)
+    {
+        $course = Course::find($id);
+
+        if (!$course) {
+            return false;
+        }
+
+        $course->status_cd = $data['status_cd'];
+        $course->save();
     }
 }

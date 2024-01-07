@@ -71,7 +71,9 @@ class PaymentRepository implements PaymentRepositoryInterface
         $payments[$key]->register_course->user = $payments[$key]->register_course ? $payments[$key]->register_course->user : null;
       } else {
         $payments[$key]->register_offer = $payment->registerOffer;
-        $payments[$key]->register_offer->request = $payment->registerOffer->request;
+        if ($payment->registerOffer && $payment->registerOffer->request) {
+          $payments[$key]->register_offer->request = $payment->registerOffer->request;
+        }
       }
     }
 
