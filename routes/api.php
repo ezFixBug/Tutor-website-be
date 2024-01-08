@@ -186,5 +186,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
                 Route::delete('/', [AdminController::class, 'deleteUser']);
             });
         });
+
+        Route::get('payments', [AdminController::class,'getPayments']);
     });
 });

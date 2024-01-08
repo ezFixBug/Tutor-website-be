@@ -2,15 +2,17 @@
 
 namespace App\Repositories;
 
+use App\Constants;
 use App\Models\AdminUser;
 use App\Models\FeedBack;
 use App\Models\Post;
 use App\Models\RequestTutor;
 use App\Models\Course;
+use App\Models\Payments;
 use App\Models\Report;
 use App\Models\User;
 use App\Repositories\Interfaces\AdminUserRepositoryInterface;
-use Constants;
+use Illuminate\Support\Collection;
 
 class AdminUserRepository implements AdminUserRepositoryInterface
 {
@@ -127,5 +129,42 @@ class AdminUserRepository implements AdminUserRepositoryInterface
 
         $course->status_cd = $data['status_cd'];
         $course->save();
+    }
+
+    public function getPayments($data)
+    {
+        $builder = Payments::with(['user']);
+
+        if(isset($data['start_date']) && isset($data['end_date'])) {
+            $builder = $builder->whereBetween('created_at', [$data['start_date'], $data['end_date']]);
+        }
+
+        $payments = $builder->get();
+
+        $payments_course = $payments->filter(function ($payment) {
+            return $payment->payment_type == Constants::PAYMENT_COURSE;
+        })->map(function ($payment) {
+            $payment_course = $payment;
+            $payment_course->register_course = $payment->registerCourse;
+            $payment_course->register_course->course = $payment->registerCourse->course;
+            $payment_course->register_course->course->user = $payment->registerCourse->course->user;
+
+            return $payment_course;
+        })?->toArray();
+
+        $payment_offer = $payments->filter(function ($payment) {
+            return $payment->payment_type == Constants::PAYMENT_TUTOR;
+        })->map(function ($payment) {
+            $payment_offer = $payment;
+            $payment_offer->register_offer = $payment->registerOffer;
+            $payment_offer->register_offer->request = $payment->registerOffer->request;
+
+            return $payment_offer;
+        })?->toArray();
+
+        return [
+            'payment_course' => array_values($payments_course), 
+            'payment_tutor' => array_values($payment_offer),
+        ];
     }
 }
