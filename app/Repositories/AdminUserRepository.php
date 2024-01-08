@@ -13,6 +13,7 @@ use App\Models\Report;
 use App\Models\User;
 use App\Repositories\Interfaces\AdminUserRepositoryInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class AdminUserRepository implements AdminUserRepositoryInterface
 {
@@ -52,6 +53,13 @@ class AdminUserRepository implements AdminUserRepositoryInterface
 
     public function getStatistics()
     {
+        $payments_course = Payments::select(
+            DB::raw('SUM(amount) as total_amount'),
+            DB::raw('MONTH(created_at) as month')
+        )
+        ->groupBy(DB::raw('MONTH(created_at)'))
+        ->get();
+
         $data = [
             'total_tutor' => User::where('role_cd', Constants::CD_ROLE_TUTOR)->count(),
             'total_user' => User::where('role_cd', Constants::CD_ROLE_STUDENT)->count(),
@@ -59,6 +67,12 @@ class AdminUserRepository implements AdminUserRepositoryInterface
             'total_request' => RequestTutor::count(),
             'total_post' => Post::count(),
             'total_course' => Course::where('status_cd', Constants::CD_ACCEPT)->count(),
+            'payments_course' => $payments_course?->map(function ($payment) {
+                return [
+                    'label' => $payment->month,
+                    'value' => $payment->total_amount,
+                ];
+            })
         ];
 
         return $data;
