@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Constants;
 use App\Models\RequestTutor;
 use App\Models\TeachPlace;
 use App\Models\TeachPlaceDistricts;
@@ -9,7 +10,6 @@ use App\Models\TeachSubject;
 use App\Models\TeachSubjectClasses;
 use App\Models\User;
 use App\Repositories\Interfaces\UserRepositoryInterface;
-use Constants;
 use Auth;
 
 class UserRepository implements UserRepositoryInterface
@@ -47,6 +47,7 @@ class UserRepository implements UserRepositoryInterface
                 $query->with('user');
             }
         ])
+            ->where('status_cd', Constants::STATUS_ACTIVE)
             ->withCount('likes')
             ->withCount('courses')
             ->where('id', $id)->first();
@@ -66,7 +67,7 @@ class UserRepository implements UserRepositoryInterface
     public function checkHaveBeenRegisterByUserId($userId)
     {
         return RequestTutor::with('subject', 'class', 'user', 'offers')
-        ->where('user_id', Auth::id())
+            ->where('user_id', Auth::id())
             ->whereHas('offers', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
@@ -102,6 +103,7 @@ class UserRepository implements UserRepositoryInterface
     {
         $tutors = User::with('teachSubjects.teachSubjectClasses.class', 'teachSubjects.subject')
             ->where('role_cd', Constants::CD_ROLE_TUTOR)
+            ->where('status_cd', Constants::STATUS_ACTIVE)
             ->when(isset($input['subject_id']), function ($query) use ($input) {
                 $query->whereHas('teachSubjects', function ($sub_query) use ($input) {
                     $sub_query->where('subject_id', $input['subject_id']);

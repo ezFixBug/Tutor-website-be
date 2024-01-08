@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants;
 use App\Http\Requests\BecomeTutorRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Repositories\Interfaces\UserRepositoryInterface as UserRepository;
@@ -9,7 +10,6 @@ use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Constants;
 
 class UserController extends Controller
 {
@@ -35,7 +35,16 @@ class UserController extends Controller
                 'message' => 'Tên đăng nhập hoặc mật khẩu không chính xác'
             ]);
         }
+
         $user = $this->user_repo->findUserByEmail($credentials['email']);
+
+        if($user['status_cd'] !== Constants::STATUS_ACTIVE){
+            return response()->json([
+                'result' => false,
+                'status' => 400,
+                'message' => 'Tài khoản của bạn đã bị khoá. Hãy liên hệ với Admin để mở khoá!'
+            ]);
+        }
 
         return response()->json([
             'result' => true,
