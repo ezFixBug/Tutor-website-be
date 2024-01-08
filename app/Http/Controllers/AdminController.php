@@ -187,4 +187,15 @@ class AdminController extends Controller
             'status' => 200,
         ]);
     }
+
+    public function getPayments(Request $request)
+    {
+        $payment = $this->admin_user_repo->getPayments($request->all());
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'payments' => $payment
+        ]);
+    }
 }

@@ -18,4 +18,5 @@ interface AdminUserRepositoryInterface
     public function getListReportedTutors();
     public function getListReportedCourses();
     public function blockCourseById($id, $data);
+    public function getPayments($data);
 }
