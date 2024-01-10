@@ -10,7 +10,7 @@ interface AdminUserRepositoryInterface
 
     public function getCourses($input);
 
-    public function getStatistics();
+    public function getStatistics($data);
 
     public function getListUsers();
     public function blockUserById($id, $data);

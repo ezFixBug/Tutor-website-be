@@ -116,9 +116,9 @@ class AdminController extends Controller
         ]);
     }
 
-    public function getStatistics()
+    public function getStatistics(Request $request)
     {
-        $statistics = $this->admin_user_repo->getStatistics();
+        $statistics = $this->admin_user_repo->getStatistics($request->all());
 
         return response()->json([
             'result' => true,

@@ -12,6 +12,7 @@ use App\Models\Payments;
 use App\Models\Report;
 use App\Models\User;
 use App\Repositories\Interfaces\AdminUserRepositoryInterface;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -51,15 +52,14 @@ class AdminUserRepository implements AdminUserRepositoryInterface
         return $courses ? $courses->toArray() : [];
     }
 
-    public function getStatistics()
+    public function getStatistics($data)
     {
-        $payments_course = Payments::select(
-            DB::raw('SUM(amount) as total_amount'),
-            DB::raw('MONTH(created_at) as month')
-        )
-        ->groupBy(DB::raw('MONTH(created_at)'))
-        ->get();
+        $year = isset($data['year']) ? $data['year'] : Carbon::now()->year;
+        $month = isset($data['month']) ? $data['month'] : null;
 
+        $payments_course = $this->getPaymentData(Constants::PAYMENT_COURSE, $year, $month);
+        $payments_tutor = $this->getPaymentData(Constants::PAYMENT_TUTOR, $year, $month);
+        
         $data = [
             'total_tutor' => User::where('role_cd', Constants::CD_ROLE_TUTOR)->count(),
             'total_user' => User::where('role_cd', Constants::CD_ROLE_STUDENT)->count(),
@@ -67,15 +67,67 @@ class AdminUserRepository implements AdminUserRepositoryInterface
             'total_request' => RequestTutor::count(),
             'total_post' => Post::count(),
             'total_course' => Course::where('status_cd', Constants::CD_ACCEPT)->count(),
-            'payments_course' => $payments_course?->map(function ($payment) {
-                return [
-                    'label' => $payment->month,
-                    'value' => $payment->total_amount,
-                ];
-            })
+            'payments_course' => $payments_course,
+            'payments_tutor' => $payments_tutor,
         ];
 
         return $data;
+    }
+
+    private function getPaymentData($type, $year, $month)
+    {
+        if ($month) {
+            $query = Payments::select(
+                DB::raw('DAY(created_at) as day'),
+                DB::raw('SUM(amount) as totalAmount')
+            )
+                ->whereMonth('created_at', $month)
+                ->groupBy(DB::raw('DAY(created_at)'));
+        } else {
+            $query = Payments::select(
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('SUM(amount) as totalAmount')
+            )
+                ->groupBy(DB::raw('MONTH(created_at), YEAR(created_at)'));
+        }
+        $payments = $query->where('payment_type', $type)->whereYear('created_at', $year)->get();
+
+        $result = $payments->map(function ($payment) use ($month, $year) {
+            $label = Carbon::createFromDate($year, $payment?->month ?? $month, $payment?->day);
+            $label = $month ? $label->format('Y-m-d') : $label->format('Y-m');
+            return [
+                'label' => $label,
+                'value' => $payment->totalAmount
+            ];
+        });
+
+        $labels = [];
+        $start = Carbon::createFromDate($year, $month ?? 1, 1);
+        if (!$month) {
+            for ($month = 1; $month <= 12; $month++) {
+                $date = $start->copy()->month($month);
+                $labels[] = $date->format('Y-m');
+            }
+        } else {
+            for ($day = 1; $day <= $start->daysInMonth; $day++) {
+                $date = $start->copy()->day($day);
+                $labels[] = $date->format('Y-m-d');
+            }
+        }
+
+        $data_sets = [];
+        foreach ($labels as $label) {
+            $payment_filter = $result->first(function ($payment) use ($label) {
+                return $payment['label'] === $label;
+            });
+
+            $data_sets[] = [
+                'label' => $label,
+                'value' => $payment_filter ? $payment_filter['value'] : 0,
+            ];
+        }
+        return $data_sets;
     }
 
     public function getListUsers()
@@ -149,7 +201,7 @@ class AdminUserRepository implements AdminUserRepositoryInterface
     {
         $builder = Payments::with(['user']);
 
-        if(isset($data['start_date']) && isset($data['end_date'])) {
+        if (isset($data['start_date']) && isset($data['end_date'])) {
             $builder = $builder->whereBetween('created_at', [$data['start_date'], $data['end_date']]);
         }
 
@@ -177,7 +229,7 @@ class AdminUserRepository implements AdminUserRepositoryInterface
         })?->toArray();
 
         return [
-            'payment_course' => array_values($payments_course), 
+            'payment_course' => array_values($payments_course),
             'payment_tutor' => array_values($payment_offer),
         ];
     }
