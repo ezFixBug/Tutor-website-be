@@ -160,4 +160,9 @@ class User extends BaseModel implements
     {
         return  $this->hasMany(Report::class, 'relation_id');
     }
+
+    public function revenue()
+    {
+        return $this->hasMany(Revenue::class);
+    }
 }

@@ -10,14 +10,23 @@ use App\Models\RequestTutor;
 use App\Models\Course;
 use App\Models\Payments;
 use App\Models\Report;
+use App\Models\Revenue;
 use App\Models\User;
 use App\Repositories\Interfaces\AdminUserRepositoryInterface;
+use App\Repositories\Interfaces\PaymentRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class AdminUserRepository implements AdminUserRepositoryInterface
 {
+    private PaymentRepositoryInterface $paymentRepository;
+
+    public function __construct(PaymentRepositoryInterface $paymentRepository)
+    {
+        $this->paymentRepository = $paymentRepository;
+    }
+
     public function getTutors($input)
     {
         $tutors = User::with('province', 'district', 'job')
@@ -59,7 +68,7 @@ class AdminUserRepository implements AdminUserRepositoryInterface
 
         $payments_course = $this->getPaymentData(Constants::PAYMENT_COURSE, $year, $month);
         $payments_tutor = $this->getPaymentData(Constants::PAYMENT_TUTOR, $year, $month);
-        
+
         $data = [
             'total_tutor' => User::where('role_cd', Constants::CD_ROLE_TUTOR)->count(),
             'total_user' => User::where('role_cd', Constants::CD_ROLE_STUDENT)->count(),
@@ -232,5 +241,29 @@ class AdminUserRepository implements AdminUserRepositoryInterface
             'payment_course' => array_values($payments_course),
             'payment_tutor' => array_values($payment_offer),
         ];
+    }
+
+    public function getTotalRevenueWithUser($data)
+    {
+        $users = User::with('revenue')->whereHas('revenue', function ($query) use ($data) {
+            $query->whereYear('created_at', $data['year'])->whereMonth('created_at', $data['month']);
+        })->withSum('revenue', 'amount')->get();
+
+        $users_pending = $users?->filter(function ($user) {
+            return $user->revenue->first()->status_cd === Constants::STATUS_INACTIVE;
+        })->toArray();
+
+        $users_completed = $users?->filter(function ($user) {
+            return $user->revenue->first()->status_cd === Constants::STATUS_ACTIVE;
+        })->toArray();
+
+        return [$users_pending, $users_completed];
+    }
+
+    public function updateRevenue($data)
+    {
+        Revenue::where('user_id', $data['user_id'])->update([
+            'status_cd' => Constants::STATUS_ACTIVE
+        ]);
     }
 }

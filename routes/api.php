@@ -143,7 +143,6 @@ Route::group(['middleware' => ['auth:api']], function () {
     });
 
     Route::post('/vn-pay', [PaymentController::class, 'getVnPayment']);
-    Route::post('/momo-payment', [PaymentController::class, 'getMomoPayment']);
 
     Route::group(['prefix' => 'coupons'], function () {
         Route::get('/{code}', [CouponController::class, 'getCouponByCode']);
@@ -188,5 +187,8 @@ Route::group(['middleware' => ['auth:admin']], function () {
         });
 
         Route::get('payments', [AdminController::class,'getPayments']);
+        Route::get('total_revenue', [AdminController::class,'getTotalRevenueWithUser']);
+        Route::post('revenue', [AdminController::class,'updateRevenue']);
     });
 });
+Route::post('/momo-payment', [PaymentController::class, 'getMomoPayment']);

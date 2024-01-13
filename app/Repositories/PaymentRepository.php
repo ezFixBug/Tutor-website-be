@@ -4,10 +4,12 @@ namespace App\Repositories;
 
 use App\Constants;
 use App\Models\Payments;
+use App\Models\Revenue;
 use App\Repositories\Interfaces\PaymentRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\OfferRequest;
+use App\Models\RegisterCourse;
 
 class PaymentRepository implements PaymentRepositoryInterface
 {
@@ -51,14 +53,33 @@ class PaymentRepository implements PaymentRepositoryInterface
       'status' => 1,
       'payment_type' => $data['payment_type'],
     ]);
+
+    if($data['payment_type'] == Constants::PAYMENT_COURSE){
+      $register_course = RegisterCourse::with('course.user')->where('id', $data['register_course_id'])->first();
+      Revenue::create([
+        'user_id' => $register_course->course->user->id,
+        'course_id' => $register_course->course->id,
+        'amount' => isset($payment['vnp_Amount']) ? $payment['vnp_Amount'] / 100 : $payment['amount'],
+        'status_cd' => Constants::STATUS_INACTIVE
+      ]);
+    }
   }
 
   public function getHistories($data)
   {
-    $payments = Payments::where([
+    $query = Payments::where([
       'user_id' => $data['user_id'],
       'payment_type' => $data['payment_type'],
-    ])->get();
+    ]);
+
+    if (isset($data['year'])) {
+      $query->whereYear('created_at', $data['year']);
+    }
+    if (isset($data['month'])) {
+      $query->whereMonth('created_at', $data['month']);
+    }
+
+    $payments = $query->get();
 
     $total_amount = 0;
 
@@ -84,9 +105,18 @@ class PaymentRepository implements PaymentRepositoryInterface
   }
   public function statistics($data)
   {
-    $payments = Payments::where([
+    $query = Payments::where([
       'user_id' => $data['user_id']
-    ])->get();
+    ]);
+
+    if (isset($data['year'])) {
+      $query->whereYear('created_at', $data['year']);
+    }
+    if (isset($data['month'])) {
+      $query->whereMonth('created_at', $data['month']);
+    }
+
+    $payments = $query->get();
 
     $amount_spent = 0;
     $total_revenue = 0;
@@ -95,8 +125,16 @@ class PaymentRepository implements PaymentRepositoryInterface
       $amount_spent += $payment['amount'];
     }
 
-    $all_payment = Payments::all();
+    $all_payment_query = Payments::orderBy('created_at');
 
+    if (isset($data['year'])) {
+      $all_payment_query->whereYear('created_at', $data['year']);
+    }
+    if (isset($data['month'])) {
+      $all_payment_query->whereMonth('created_at', $data['month']);
+    }
+
+    $all_payment = $all_payment_query->get();
     foreach ($all_payment ?? [] as $payment) {
       if (
         $payment->payment_type == Constants::PAYMENT_COURSE
