@@ -92,4 +92,8 @@ class Course extends BaseModel
     {
         return  $this->hasMany(Report::class, 'relation_id');
     }
+    public function lessons()
+    {
+        return $this->hasMany(CourseLesson::class);
+    }
 }

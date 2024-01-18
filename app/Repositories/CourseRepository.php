@@ -6,6 +6,7 @@ use App\Constants;
 use App\Models\Comment;
 use App\Models\Course;
 use App\Models\CourseClass;
+use App\Models\CourseLesson;
 use App\Models\CourseSubject;
 use App\Models\RegisterCourse;
 use App\Models\User;
@@ -26,7 +27,14 @@ class CourseRepository implements CourseRepositoryInterface
 
     public function createOrUpdateCourse($input)
     {
-        return Course::saveOrUpdateWithUuid($input);
+        $course_id = Course::saveOrUpdateWithUuid($input);
+        if(isset($input['lesson'])) {
+            foreach($input['lesson'] as $lesson) {
+                $lesson['course_id'] = $course_id;
+                CourseLesson::saveOrUpdateWithUuid($lesson);
+            }
+        }
+        return $course_id;
     }
 
     public function getCoursesByUserId($user_id)
@@ -65,6 +73,7 @@ class CourseRepository implements CourseRepositoryInterface
             ->with(['user', 'rating' => function ($query) {
                 $query->with('user');
             }])
+            ->with('lessons')
             ->withCount('likes')
             ->find($course_id);
 
