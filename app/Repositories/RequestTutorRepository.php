@@ -72,6 +72,9 @@ class RequestTutorRepository implements RequestTutorRepositoryInterface
             ->when(isset($input['course_type_cd']), function ($query) use ($input) {
                 $query->where('course_type_cd', $input['course_type_cd']);
             })
+            ->whereHas('user', function ($query){
+                $query->where('status_cd', Constants::STATUS_ACTIVE);
+            })
             // ->whereDoesntHave('offers', function ($query) {
             //     $query->where('status_cd', Constants::CD_OFFER_REQUEST_APPROVE);
             // })

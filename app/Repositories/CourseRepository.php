@@ -42,6 +42,9 @@ class CourseRepository implements CourseRepositoryInterface
                 }
             ])
             ->with('user')
+            ->whereHas('user', function ($query){
+                $query->where('status_cd', Constants::STATUS_ACTIVE);
+            })
             ->where("user_id", $user_id)->get();
 
         return $courses ? $courses->toArray() : [];
@@ -138,6 +141,9 @@ class CourseRepository implements CourseRepositoryInterface
                 }
             })
             ->where('status_cd', Constants::CD_ACCEPT)
+            ->whereHas('user', function ($query){
+                $query->where('status_cd', Constants::STATUS_ACTIVE);
+            })
             ->select('courses.*')
             ->paginate(6);
 

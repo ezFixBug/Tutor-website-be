@@ -72,14 +72,25 @@ class PaymentService
     $partnerCode = 'MOMOBKUN20180529';
     $accessKey = 'klm05TvNBzhg7h7j';
     $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
-    $orderInfo = $data['payment_type'] == Constants::PAYMENT_COURSE
-      ? 'Thanh toán mua khoá học'
-      : 'Thanh toán nhận học viên';;
+    $orderInfo = 'Thanh toán tiền khoá học cho gia sư';
+    if ($data['payment_type'] == Constants::PAYMENT_COURSE || $data['payment_type'] == Constants::PAYMENT_TUTOR) {
+      $orderInfo = $data['payment_type'] == Constants::PAYMENT_COURSE
+        ? 'Thanh toán mua khoá học'
+        : 'Thanh toán nhận học viên';
+    }
     $amount = $data['total_amount'];
     $orderId = time() . "";
-    $redirectUrl = $data['payment_type'] == Constants::PAYMENT_COURSE
-      ? 'http://localhost:8080/chi-tiet-khoa-hoc/' . $data['course_id']
-      : 'http://localhost:8080/chi-tiet-yeu-cau/' . $data['request_tutors_id'];
+
+    $redirectUrl = '';
+    if (isset($data['redirect_url'])) {
+      $redirectUrl = $data['redirect_url'];
+    } else {
+      $redirectUrl = $data['payment_type'] == Constants::PAYMENT_COURSE
+        ? 'http://localhost:8080/chi-tiet-khoa-hoc/' . $data['course_id']
+        : 'http://localhost:8080/chi-tiet-yeu-cau/' . $data['request_tutors_id'];
+    }
+
+
     $ipnUrl = $redirectUrl;
     $extraData = "";
 

@@ -116,9 +116,9 @@ class AdminController extends Controller
         ]);
     }
 
-    public function getStatistics()
+    public function getStatistics(Request $request)
     {
-        $statistics = $this->admin_user_repo->getStatistics();
+        $statistics = $this->admin_user_repo->getStatistics($request->all());
 
         return response()->json([
             'result' => true,
@@ -196,6 +196,25 @@ class AdminController extends Controller
             'result' => true,
             'status' => 200,
             'payments' => $payment
+        ]);
+    }
+    public function getTotalRevenueWithUser(Request $request)
+    {
+        [$users_pending, $users_completed] = $this->admin_user_repo->getTotalRevenueWithUser($request->all());
+
+        return response()->json([
+            'result' => true,
+            'status' => 200,
+            'users_pending' => $users_pending,
+            'users_completed' => $users_completed
+        ]);
+    }
+
+    public function updateRevenue(Request $request){
+        $this->admin_user_repo->updateRevenue($request->all());
+        return response()->json([
+            'result' => true,
+            'status' => 200,
         ]);
     }
 }

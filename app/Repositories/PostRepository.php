@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Constants;
 use App\Models\Like;
 use App\Models\Post;
 use App\Repositories\Interfaces\PostRepositoryInterface;
@@ -22,7 +23,9 @@ class PostRepository implements PostRepositoryInterface
 
     public function getPostById($post_id)
     {
-        $post = Post::with('user')->withCount('likes')->find($post_id);
+        $post = Post::with('user')->whereHas('user', function ($query) {
+            $query->where('status_cd', Constants::STATUS_ACTIVE);
+        })->withCount('likes')->find($post_id);
 
         return $post ? $post->toArray() : null;
     }
@@ -36,6 +39,9 @@ class PostRepository implements PostRepositoryInterface
     {
         $result = Post::with('user')
             ->withCount('likes')
+            ->whereHas('user', function ($query) {
+                $query->where('status_cd', Constants::STATUS_ACTIVE);
+            })
             ->when(isset($input['type_cd']), function ($query) use ($input) {
                 return $query->where('type_cd', '=', $input['type_cd']);
             })->paginate(6);
@@ -46,6 +52,9 @@ class PostRepository implements PostRepositoryInterface
     public function getRelatedPosts($post)
     {
         $result = Post::with('user')
+            ->whereHas('user', function ($query) {
+                $query->where('status_cd', Constants::STATUS_ACTIVE);
+            })
             ->where('id', '!=', $post['id'])
             ->where(function ($query) use ($post) {
                 $query->where('type_cd', '=', $post['type_cd'])
@@ -61,7 +70,7 @@ class PostRepository implements PostRepositoryInterface
     {
         $current_view = $post['view'];
         $view = $current_view + 1;
-        
+
         Post::find($post['id'])->update(['view' => $view]);
     }
 }

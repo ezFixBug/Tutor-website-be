@@ -10,7 +10,7 @@ interface AdminUserRepositoryInterface
 
     public function getCourses($input);
 
-    public function getStatistics();
+    public function getStatistics($data);
 
     public function getListUsers();
     public function blockUserById($id, $data);
@@ -19,4 +19,6 @@ interface AdminUserRepositoryInterface
     public function getListReportedCourses();
     public function blockCourseById($id, $data);
     public function getPayments($data);
+    public function getTotalRevenueWithUser($data);
+    public function updateRevenue($data);
 }

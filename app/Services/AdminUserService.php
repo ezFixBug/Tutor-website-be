@@ -2,9 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\AdminUser;
-use App\Repositories\AdminUserRepository;
-use App\Repositories\AdminUserRepositoryInterface;
+use App\Repositories\Interfaces\AdminUserRepositoryInterface;
 
 class AdminUserService
 {
@@ -15,4 +13,5 @@ class AdminUserService
         $this->AdminUserRepositoryInterface = $AdminUserRepository;
     }
     // Your service methods here
+
 }
