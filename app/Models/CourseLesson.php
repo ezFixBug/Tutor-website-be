@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CourseLesson extends Model
+class CourseLesson extends BaseModel
 {
     use HasFactory;
+    use SoftDeletes;
+
+    protected $guarded = ['id'];
 }

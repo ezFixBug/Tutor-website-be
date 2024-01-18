@@ -232,6 +232,8 @@ class CourseController extends Controller
     public function registerCourse(Request $request)
     {
         $input = $request->all();
+        $input['status_cd'] = Constants::CD_REGISTER_COURSE_APPROVE;
+        $input['approve_at'] = Carbon::now();
 
         $register_course = $this->course_repo->saveOrUpdateRegisterCourse($input);
 
