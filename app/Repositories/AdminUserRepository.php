@@ -250,14 +250,14 @@ class AdminUserRepository implements AdminUserRepositoryInterface
         })->withSum('revenue', 'amount')->get();
 
         $users_pending = $users?->filter(function ($user) {
-            return $user->revenue->first()->status_cd === Constants::STATUS_INACTIVE;
+            return $user->revenue->where('status_cd', Constants::STATUS_INACTIVE)->first();
         })->toArray();
 
         $users_completed = $users?->filter(function ($user) {
-            return $user->revenue->first()->status_cd === Constants::STATUS_ACTIVE;
+            return $user->revenue->where('status_cd', Constants::STATUS_ACTIVE)->first();
         })->toArray();
 
-        return [$users_pending, $users_completed];
+        return [array_values($users_pending), $users_completed];
     }
 
     public function updateRevenue($data)

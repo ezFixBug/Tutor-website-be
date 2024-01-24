@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Constants;
+use App\Models\RegisterCourse;
 use App\Models\RequestTutor;
 use App\Models\TeachPlace;
 use App\Models\TeachPlaceDistricts;
@@ -45,33 +46,46 @@ class UserRepository implements UserRepositoryInterface
             'district',
             'rating' => function ($query) {
                 $query->with('user');
-            }
+            },
+            'courses'
         ])
-            ->where('status_cd', Constants::STATUS_ACTIVE)
+            ->whereIn('status_cd',[Constants::STATUS_ACTIVE, Constants::CD_IN_PROGRESS])
             ->withCount('likes')
             ->withCount('courses')
-            ->where('id', $id)->first();
-        $user->rating_avg = 0;
+            ->where('id', $id)
+            ->first();
+            $user->rating_avg = 0;
 
-        if ($user->rating->count() > 0) {
+        if ($user?->rating?->count() > 0) {
             foreach ($user->rating as $rating) {
                 $user->rating_avg += $rating->rating;
             }
             $user->rating_avg /= count($user->rating);
         }
-        $user->is_register = $this->checkHaveBeenRegisterByUserId($id);
+        $user->is_register = $this->checkHaveBeenRegisterByUserId($user);
         return $user ? $user->toArray() : [];
     }
 
     // kiểm tra gia sư đã học viên thuê chưa
-    public function checkHaveBeenRegisterByUserId($userId)
+    public function checkHaveBeenRegisterByUserId($user)
     {
-        return RequestTutor::with('subject', 'class', 'user', 'offers')
+        $is_register_offer =  RequestTutor::with('subject', 'class', 'user', 'offers')
             ->where('user_id', Auth::id())
-            ->whereHas('offers', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
+            ->whereHas('offers', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
             })
             ->exists();
+        
+        // những khoá học hoc vien đã đăng ký
+        $register_courses = RegisterCourse::with(['course'])
+        ->where('user_id', Auth::id())->get();
+
+        $register_courses_ids = $register_courses?->pluck('course_id')->toArray();
+        $courses_ids = $user->courses?->pluck('id')->toArray();
+
+        if(array_intersect($register_courses_ids, $courses_ids) || $is_register_offer) return true; 
+
+        return false;
     }
 
     public function updateUser($input)
